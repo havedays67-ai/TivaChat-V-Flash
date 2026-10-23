@@ -24,5 +24,5 @@ for required in ['versionCode="4"','versionName="1.0.1"','targetSdkVersion="34"'
     ok=required in manifest
     print(('PASS' if ok else 'FAIL'),'manifest',required)
     fail += 0 if ok else 1
-print('FAILED',fail if fail else 'ALL NATIVE CHECKS PASSED')
+print('RESULT:', (str(fail)+' FAILED') if fail else 'ALL NATIVE CHECKS PASSED')
 sys.exit(1 if fail else 0)
