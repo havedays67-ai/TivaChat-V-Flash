@@ -1,0 +1,17 @@
+Verifies
+Verified using v1 scheme (JAR signing): true
+Verified using v2 scheme (APK Signature Scheme v2): true
+Verified using v3 scheme (APK Signature Scheme v3): true
+Verified using v3.1 scheme (APK Signature Scheme v3.1): false
+Verified using v4 scheme (APK Signature Scheme v4): false
+Verified for SourceStamp: false
+Number of signers: 1
+Signer #1 certificate DN: CN=TivaChat V Flash, OU=Release, O=TivaChat, L=Tehran, ST=Tehran, C=IR
+Signer #1 certificate SHA-256 digest: ff2292a0c76fd50901d13da631e6a88c6d939c46e6aacac59f30b829181ef419
+Signer #1 certificate SHA-1 digest: c7f446842a47419bbdaa8f1750a79479767c37f4
+Signer #1 certificate MD5 digest: 2c1a718bf5c7baa615769035c222ea24
+Signer #1 key algorithm: RSA
+Signer #1 key size (bits): 4096
+Signer #1 public key SHA-256 digest: ff2292a0c76fd50901d13da631e6a88c6d939c46e6aacac59f30b829181ef419
+Signer #1 public key SHA-1 digest: e01585e4163cf278c098842d8026f8b40331aa99
+Signer #1 public key MD5 digest: 77963db3c410b2fb87691284bb29fd3e
