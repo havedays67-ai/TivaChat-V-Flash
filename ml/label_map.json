@@ -1,0 +1,22 @@
+{
+  "open_app": 0,
+  "close_app": 1,
+  "battery": 2,
+  "ram": 3,
+  "storage": 4,
+  "temperature": 5,
+  "device_all": 6,
+  "flashlight_on": 7,
+  "flashlight_off": 8,
+  "settings_wifi": 9,
+  "settings_bluetooth": 10,
+  "alarm": 11,
+  "timer": 12,
+  "call": 13,
+  "sms": 14,
+  "search": 15,
+  "compose_message": 16,
+  "greeting": 17,
+  "thanks": 18,
+  "negative": 19
+}
