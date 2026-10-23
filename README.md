@@ -4,8 +4,8 @@
 
 ## دریافت مستقیم
 
-- **APK امضاشده:** [TivaChat-V-Flash-v1.0.0.apk](./apk/TivaChat-V-Flash-v1.0.0.apk)
-- **لینک مستقیم انتشار:** https://github.com/havedays67-ai/TivaChat-V-Flash/releases/latest/download/TivaChat-V-Flash-v1.0.0.apk
+- **APK امضاشده:** [TivaChat-V-Flash-v1.0.0-build3.apk](./apk/TivaChat-V-Flash-v1.0.0-build3.apk)
+- **لینک مستقیم انتشار:** https://github.com/havedays67-ai/TivaChat-V-Flash/releases/latest/download/TivaChat-V-Flash-v1.0.0-build3.apk
 - **انتشار رسمی:** [Releases](../../releases/latest)
 - **صفحه معرفی:** [index.html](./index.html)
 
@@ -86,8 +86,8 @@ d8 --release --min-api 28 --lib android.jar --output dex $(find obj -name '*.cla
 zipalign -f 4 unsigned.apk aligned.apk
 apksigner sign --ks YOUR-PRIVATE-KEYSTORE.jks --min-sdk-version 28 \
   --v1-signing-enabled true --v2-signing-enabled true --v3-signing-enabled true \
-  --out TivaChat-V-Flash-v1.0.0.apk aligned.apk
-apksigner verify --verbose TivaChat-V-Flash-v1.0.0.apk
+  --out TivaChat-V-Flash-v1.0.0-build3.apk aligned.apk
+apksigner verify --verbose TivaChat-V-Flash-v1.0.0-build3.apk
 ```
 
 ## هشدار امنیتی
