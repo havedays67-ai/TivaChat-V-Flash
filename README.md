@@ -6,7 +6,9 @@
 
 - **APK امضاشده:** [TivaChat-V-Flash-v1.0.0.apk](./apk/TivaChat-V-Flash-v1.0.0.apk)
 - **انتشار رسمی:** [Releases](../../releases/latest)
-- **صفحه معرفی:** [index.html](./index.html)
+- **لینک مستقیم انتشار:** https://github.com/havedays67-ai/TivaChat-V-Flash/releases/latest/download/TivaChat-V-Flash-v1.0.0.apk
+- **صفحه معرفی (GitHub Pages):** https://havedays67-ai.github.io/TivaChat-V-Flash/
+- **صفحه معرفی (فایل مخزن):** [index.html](./index.html)
 
 | مشخصه | مقدار |
 |---|---|
