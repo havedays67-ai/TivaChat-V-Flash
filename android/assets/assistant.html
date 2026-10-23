@@ -1,0 +1,1387 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+<meta name="theme-color" content="#08070d" />
+<title>تیواچت</title>
+<style>
+@font-face{font-family:Vazirmatn;src:url('Vazirmatn-Regular.ttf') format('truetype');font-weight:400;font-display:swap}
+@font-face{font-family:Vazirmatn;src:url('Vazirmatn-Bold.ttf') format('truetype');font-weight:800;font-display:swap}
+:root{
+  --bg:#08070d;--bg2:#0e0b16;--panel:rgba(255,255,255,.045);--panel2:rgba(255,255,255,.03);
+  --line:rgba(255,255,255,.09);--line2:rgba(255,255,255,.14);--text:#f4f1fb;--muted:#a39eb5;
+  --brand:#ad93ff;--brand2:#7a50f0;--mint:#79e8d1;--flash:#c9f77e;--danger:#ff9dae;
+}
+body.light{
+  --bg:#f5f2fb;--bg2:#ffffff;--panel:rgba(30,20,60,.05);--panel2:rgba(30,20,60,.032);
+  --line:rgba(30,20,60,.1);--line2:rgba(30,20,60,.16);--text:#191325;--muted:#6c6580;
+  --brand:#6d43db;--brand2:#5226bd;--mint:#138a76;--flash:#5c7a12;--danger:#c0273f;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--text);font-family:Vazirmatn,-apple-system,sans-serif;font-size:14px;overflow:hidden}
+body::before{content:"";position:fixed;top:0;right:0;bottom:0;left:0;pointer-events:none;z-index:0;background:
+  radial-gradient(430px 220px at 88% -2%,rgba(122,80,240,.24),transparent 70%),
+  radial-gradient(330px 260px at 0% 25%,rgba(63,210,182,.08),transparent 70%),
+  radial-gradient(420px 300px at 50% 110%,rgba(122,80,240,.14),transparent 75%)}
+body.light::before{background:radial-gradient(430px 220px at 88% -2%,rgba(122,80,240,.13),transparent 70%),radial-gradient(330px 260px at 0% 25%,rgba(63,210,182,.12),transparent 70%)}
+#app{position:relative;z-index:1;display:flex;flex-direction:column;height:100vh;height:100dvh;max-width:620px;margin:0 auto}
+.header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px 10px;padding-top:calc(12px + env(safe-area-inset-top))}
+.brand{display:flex;align-items:center;gap:9px}
+.logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(145deg,#e2d8ff,#9270ff 55%,#5b2fd6);display:grid;place-items:center;box-shadow:0 8px 24px -8px rgba(146,112,255,.8);flex:none}
+.logo svg{width:23px;height:23px}
+.brand b{display:block;font-size:16px;font-weight:800;line-height:1.1}
+.brand small{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--muted);margin-top:4px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--mint);display:inline-block}
+.hbtns{display:flex;gap:6px}
+.iconbtn{width:36px;height:36px;border-radius:11px;border:1px solid var(--line);background:var(--panel);color:var(--text);display:grid;place-items:center;font-size:16px;cursor:pointer;transition:.2s}
+.iconbtn:active{transform:scale(.94)}
+main{flex:1;overflow-y:auto;overflow-x:hidden;padding:0 16px 16px;scrollbar-width:none}
+main::-webkit-scrollbar{display:none}
+.page{display:none;animation:rise .28s ease both}
+.page.active{display:block}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.hero{padding:6px 2px 14px}
+.hero h1{margin:0;font-size:25px;line-height:1.55;font-weight:800;letter-spacing:-.3px}
+.hero h1 em{font-style:normal;background:linear-gradient(95deg,var(--brand),#c9b7ff 50%,var(--mint));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{margin:8px 0 0;font-size:12.5px;line-height:2;color:var(--muted)}
+.pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.pill{border:1px solid var(--line);background:var(--panel2);color:var(--muted);font-size:10px;padding:5px 9px;border-radius:9px;display:flex;align-items:center;gap:4px}
+.chat{display:flex;flex-direction:column;gap:12px;padding-bottom:8px}
+.msg{display:flex;gap:8px;align-items:flex-start;animation:rise .25s ease both}
+.msg.me{justify-content:flex-end}
+.orb{width:26px;height:26px;border-radius:50%;flex:none;background:radial-gradient(circle at 32% 26%,#f5f0ff,#cbb8ff 22%,#9270ff 55%,#5b2fd6 100%);display:grid;place-items:center;box-shadow:0 0 14px rgba(146,112,255,.55);margin-top:2px}
+.orb svg{width:13px;height:13px}
+.bubble{max-width:86%;border:1px solid var(--line);background:var(--panel);border-radius:16px 5px 16px 16px;padding:10px 13px;font-size:12.5px;line-height:1.95}
+.me .bubble{border:0;background:linear-gradient(135deg,var(--brand2),#9775ff);color:#fff;border-radius:16px 16px 5px 16px;max-width:84%}
+.card{border:1px solid var(--line2);background:linear-gradient(150deg,var(--panel),var(--panel2));border-radius:14px;overflow:hidden;margin-top:6px;max-width:94%}
+.card-top{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 11px;border-bottom:1px solid var(--line);background:rgba(146,112,255,.07)}
+.card-top .intent{font-size:10px;font-weight:700;color:var(--brand)}
+.conf{font-size:9px;font-weight:800;padding:3px 7px;border-radius:99px;background:rgba(121,232,209,.12);color:var(--mint);font-family:sans-serif}
+.conf.low{background:rgba(201,247,126,.1);color:var(--flash)}
+.card-body{padding:9px 11px}
+.bar{height:4px;border-radius:9px;background:rgba(255,255,255,.09);overflow:hidden;margin-top:7px}
+.bar i{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,var(--brand),var(--mint));transition:width .5s}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.tile{border:1px solid var(--line);background:var(--panel2);border-radius:9px;padding:7px 8px;min-width:0}
+.tile small{display:block;font-size:9px;color:var(--muted);margin-bottom:2px}
+.tile b{font-size:11.5px;font-weight:700;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.status{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--muted);margin-top:9px;line-height:1.7}
+.status .spin{width:11px;height:11px;border:2px solid rgba(173,147,255,.25);border-top-color:var(--brand);border-radius:50%;animation:spin .8s linear infinite;flex:none}
+.status.ok{color:var(--mint)}.status.err{color:var(--danger)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+.chips button{border:1px solid rgba(173,147,255,.25);background:rgba(146,112,255,.09);color:var(--brand);border-radius:8px;padding:5px 8px;font-family:inherit;font-size:10px;cursor:pointer}
+.actions{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}
+.btn{border:1px solid var(--line2);background:var(--panel);color:var(--text);border-radius:9px;padding:7px 11px;font-family:inherit;font-size:11px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:5px}
+.btn:active{transform:scale(.97)}
+.btn.primary{border:0;background:linear-gradient(135deg,#e2d8ff,#ad93ff);color:#160f24}
+.btn.ghost{background:transparent;color:var(--muted)}
+.btn.danger{border-color:rgba(255,157,174,.25);background:rgba(255,157,174,.07);color:var(--danger)}
+.btn:disabled{opacity:.45}
+.composer{display:flex;gap:6px;align-items:flex-end;border:1px solid var(--line2);background:var(--panel);border-radius:17px;padding:6px 7px 6px 12px;backdrop-filter:blur(18px)}
+.composer textarea{flex:1;background:transparent;border:0;resize:none;color:var(--text);font-family:inherit;font-size:12.5px;line-height:1.8;max-height:92px;padding:6px 0;outline:0}
+.composer textarea::placeholder{color:var(--muted);opacity:.75}
+.rd{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--text);cursor:pointer;flex:none;font-size:15px}
+.rd.send{background:var(--brand);border:0;color:#170f26}
+.rd:active{transform:scale(.94)}
+.rdlistening{background:var(--brand);color:#170f26;animation:pulse 1.1s infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 8px rgba(173,147,255,.15)}}
+.suggest{display:flex;gap:6px;overflow-x:auto;padding:9px 0 7px;scrollbar-width:none}
+.suggest::-webkit-scrollbar{display:none}
+.suggest button{flex:none;border:1px solid var(--line);background:var(--panel2);color:var(--muted);border-radius:99px;padding:6px 10px;font-family:inherit;font-size:10.5px;cursor:pointer}
+.suggest button:active{background:rgba(146,112,255,.12);color:var(--brand)}
+.footerhint{display:flex;align-items:center;justify-content:space-between;gap:6px;color:var(--muted);font-size:9px;padding:6px 3px 0}
+.nav{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;padding:7px 10px calc(7px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(22px)}
+.nav button{background:transparent;border:0;color:var(--muted);font-family:inherit;font-size:10px;display:flex;flex-direction:column;align-items:center;gap:3px;padding:5px 0;border-radius:10px;cursor:pointer}
+.nav button svg{width:19px;height:19px}
+.nav button.on{color:var(--brand);background:rgba(146,112,255,.08)}
+h2.ptitle{font-size:18px;font-weight:800;margin:2px 0 3px}
+.sup{font-size:11.5px;color:var(--muted);line-height:1.9;margin:0 0 12px}
+.section{margin-bottom:14px}
+.section-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.section-h b{font-size:12.5px}
+.link{background:none;border:0;color:var(--brand);font-family:inherit;font-size:10.5px;cursor:pointer}
+.stack{display:grid;gap:8px}
+.metric{border:1px solid var(--line);background:linear-gradient(155deg,var(--panel),var(--panel2));border-radius:15px;padding:12px}
+.metric-h{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.metric-h span{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px}
+.metric-h b{font-size:19px;font-weight:800}
+.metric-h b small{font-size:10px;color:var(--muted);font-weight:400}
+.metric .bar{margin-top:9px;height:5px}
+.metric .sub{font-size:9.5px;color:var(--muted);margin-top:7px;display:flex;justify-content:space-between}
+.quick{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.quick button{display:flex;align-items:center;gap:7px;text-align:right;border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:12px;padding:10px;font-family:inherit;font-size:11px;cursor:pointer}
+.quick button i{width:26px;height:26px;border-radius:8px;background:rgba(146,112,255,.11);display:grid;place-items:center;font-style:normal;flex:none;font-size:13px}
+.quick button:active{transform:scale(.985);background:rgba(146,112,255,.08)}
+.searchbox{display:flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:8px 11px;margin-bottom:10px}
+.searchbox input{flex:1;background:none;border:0;outline:0;color:var(--text);font-family:inherit;font-size:12px;min-width:0}
+.approw{display:flex;align-items:center;gap:9px;padding:8px;border:1px solid var(--line);background:var(--panel2);border-radius:12px;margin-bottom:6px}
+.avatar{width:34px;height:34px;border-radius:10px;background:linear-gradient(145deg,rgba(173,147,255,.25),rgba(122,80,240,.08));border:1px solid var(--line);display:grid;place-items:center;font-size:12px;font-weight:800;color:var(--brand);flex:none}
+.appinfo{min-width:0;flex:1}
+.appinfo b{display:block;font-size:11.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.appinfo small{display:block;font-size:8.5px;color:var(--muted);direction:ltr;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.appbtns{display:flex;gap:4px}
+.appbtns button{width:28px;height:28px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--muted);font-size:11px;cursor:pointer}
+.appbtns button.open{background:rgba(146,112,255,.12);color:var(--brand);border-color:rgba(173,147,255,.2)}
+.locked{text-align:center;border:1px solid var(--line);background:linear-gradient(160deg,var(--panel),var(--panel2));border-radius:18px;padding:26px 18px}
+.lockring{width:72px;height:72px;border-radius:50%;margin:0 auto 13px;display:grid;place-items:center;border:1px solid rgba(173,147,255,.35);background:rgba(146,112,255,.1);font-size:30px;box-shadow:0 0 0 9px rgba(146,112,255,.05)}
+.locked h3{margin:0 0 5px;font-size:14px}
+.locked p{margin:0 0 14px;color:var(--muted);font-size:10.5px;line-height:1.9}
+.field{margin-bottom:8px}
+.field label{display:block;font-size:10px;color:var(--muted);margin-bottom:4px}
+.field input{width:100%;border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:9px 11px;color:var(--text);font-family:inherit;font-size:12px;outline:0}
+.field input:focus{border-color:rgba(173,147,255,.45)}
+.vrow{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--panel2);border-radius:12px;padding:9px 10px;margin-bottom:7px}
+.vrow .appinfo b{font-size:11.5px}
+.vrow .appinfo small{font-size:9px}
+.vbtns{display:flex;gap:4px}
+.vbtns button{width:29px;height:29px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer;font-size:12px}
+.notice{border:1px solid rgba(173,147,255,.19);background:rgba(146,112,255,.06);border-radius:12px;padding:10px 12px;font-size:10px;line-height:1.95;color:var(--muted)}
+.notice.warn{border-color:rgba(201,247,126,.2);background:rgba(201,247,126,.05)}
+.perm{display:flex;align-items:center;gap:9px;border:1px solid var(--line);background:var(--panel2);border-radius:12px;padding:10px;margin-bottom:7px}
+.perm .pi{width:32px;height:32px;border-radius:9px;background:rgba(146,112,255,.1);display:grid;place-items:center;font-size:14px;flex:none}
+.perm .pt{flex:1;min-width:0}
+.perm .pt b{display:block;font-size:11px}
+.perm .pt small{display:block;font-size:9px;color:var(--muted);line-height:1.6;margin-top:2px}
+.state{font-size:9px;font-weight:700;padding:4px 7px;border-radius:99px;border:1px solid var(--line);color:var(--muted);white-space:nowrap;background:transparent;font-family:inherit;cursor:pointer}
+.state.ok{color:var(--mint);background:rgba(121,232,209,.09);border-color:rgba(121,232,209,.2)}
+.checklist{display:grid;gap:6px}
+.check{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--panel2);border-radius:9px;padding:8px 10px;font-size:10px;color:var(--muted);cursor:pointer;text-align:right;width:100%;font-family:inherit}
+.check.on{color:var(--text);border-color:rgba(121,232,209,.2);background:rgba(121,232,209,.055)}
+.checkbox{width:15px;height:15px;border-radius:5px;border:1px solid var(--line2);display:grid;place-items:center;font-size:9px;color:transparent;flex:none}
+.check.on .checkbox{background:rgba(121,232,209,.16);color:var(--mint);border-color:rgba(121,232,209,.35)}
+.sheet{position:fixed;top:0;right:0;bottom:0;left:0;z-index:60;display:none}
+.sheet.show{display:block}
+.sheet-bg{position:absolute;top:0;right:0;bottom:0;left:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px)}
+.sheet-box{position:absolute;left:0;right:0;bottom:0;max-width:620px;margin:0 auto;background:var(--bg2);border:1px solid var(--line2);border-bottom:0;border-radius:22px 22px 0 0;padding:16px 16px calc(20px + env(safe-area-inset-bottom));animation:up .25s ease both}
+@keyframes up{from{transform:translateY(30px);opacity:.6}to{transform:none;opacity:1}}
+.sheet-box h3{margin:0 0 12px;font-size:14px}
+.setrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);font-size:11.5px}
+.switch{width:40px;height:23px;border-radius:99px;border:1px solid var(--line2);background:rgba(255,255,255,.06);position:relative;cursor:pointer;flex:none}
+.switch i{position:absolute;top:2px;right:2px;width:17px;height:17px;border-radius:50%;background:var(--muted);transition:.2s}
+.switch.on{background:rgba(146,112,255,.4);border-color:rgba(173,147,255,.5)}
+.switch.on i{right:19px;background:#fff}
+.toast{position:fixed;left:50%;bottom:84px;transform:translate(-50%,14px);z-index:80;background:#1b1626;color:#f4f1fb;border:1px solid rgba(255,255,255,.14);padding:9px 14px;border-radius:11px;font-size:11px;opacity:0;pointer-events:none;transition:.25s;max-width:88%;text-align:center;box-shadow:0 16px 40px rgba(0,0,0,.4)}
+body.light .toast{background:#211a30}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.modal{position:fixed;top:0;right:0;bottom:0;left:0;z-index:70;display:none;align-items:center;justify-content:center;padding:22px}
+.modal.show{display:flex}
+.modal-bg{position:absolute;top:0;right:0;bottom:0;left:0;background:rgba(0,0,0,.65);backdrop-filter:blur(3px)}
+.modal-box{position:relative;width:100%;max-width:340px;border:1px solid var(--line2);background:var(--bg2);border-radius:18px;padding:17px;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+.modal-box h4{margin:0 0 7px;font-size:13px}
+.modal-box p{margin:0 0 12px;font-size:10.5px;line-height:1.9;color:var(--muted)}
+.secret{font-family:monospace;font-size:15px;direction:ltr;text-align:center;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:10px;margin-bottom:10px;word-break:break-all;color:var(--brand)}
+.modal-actions{display:flex;gap:6px;justify-content:flex-end}
+.empty{text-align:center;color:var(--muted);font-size:10.5px;border:1px dashed var(--line2);border-radius:12px;padding:18px 10px;line-height:1.9}
+
+/* ---------- floating glass panel ---------- */
+.closebtn,.expandbtn{display:none!important}
+body.floating{background:transparent!important;overflow:hidden}
+body.floating .closebtn,body.floating .expandbtn{display:grid!important}
+body.floating #closeBtn{display:none!important}
+body.floating .header{padding-left:46px}
+body.floating .hbtns{gap:5px}
+body.floating #app{height:calc(100vh - 20px);height:calc(100dvh - 20px);max-width:560px;margin:10px auto;border-radius:26px;border:1px solid rgba(255,255,255,.16);background:rgba(8,7,13,.965);box-shadow:0 34px 90px rgba(0,0,0,.68),inset 0 1px 0 rgba(255,255,255,.08);overflow:hidden;animation:panelpop .3s cubic-bezier(.2,1.2,.35,1) both}
+body.floating.light #app{background:rgba(248,246,253,.98);border-color:rgba(30,20,60,.16)}
+body.floating::before{display:none}
+@keyframes panelpop{from{opacity:0;transform:scale(.93) translateY(16px)}to{opacity:1;transform:none}}
+.nav{grid-template-columns:repeat(5,1fr)}
+body.floating.kb-open #app{height:calc(100vh - 12px);height:calc(100dvh - 12px);margin:6px auto}
+body.floating.kb-open main{padding-bottom:70px}
+body.floating .composer{position:sticky;bottom:0;z-index:5;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(14px)}
+body.floating main{scroll-padding-bottom:90px}
+@media(max-height:560px){body.floating .nav{padding-top:3px;padding-bottom:calc(3px + env(safe-area-inset-bottom))}body.floating .hero{display:none}body.floating .header{padding-top:6px;padding-bottom:6px}}
+/* ---------- training & learning ---------- */
+.lesson{border:1px solid var(--line);background:linear-gradient(155deg,var(--panel),var(--panel2));border-radius:14px;padding:11px 12px;margin-bottom:8px}
+.lesson b{display:block;font-size:11.5px;margin-bottom:3px}
+.lesson p{margin:0;font-size:9.8px;line-height:1.9;color:var(--muted)}
+.lesson .ex{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.lesson .ex button{border:1px solid rgba(173,147,255,.22);background:rgba(146,112,255,.08);color:var(--brand);border-radius:8px;padding:5px 8px;font-family:inherit;font-size:9.5px;cursor:pointer;text-align:right}
+.statrow{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:12px}
+.statrow div{border:1px solid var(--line);background:var(--panel2);border-radius:10px;padding:8px 6px;text-align:center}
+.statrow b{display:block;font-size:14px}
+.statrow small{display:block;font-size:8.5px;color:var(--muted);margin-top:2px}
+.formrow{margin-bottom:8px}
+.formrow label{display:block;font-size:10px;color:var(--muted);margin-bottom:4px}
+.formrow input,.formrow select{width:100%;border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:9px 10px;color:var(--text);font-family:inherit;font-size:11px;outline:0;appearance:none}
+.formrow input:focus,.formrow select:focus{border-color:rgba(173,147,255,.45)}
+.learnrow{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--panel2);border-radius:10px;padding:8px 10px;margin-bottom:6px}
+.learnrow .appinfo b{font-size:11px}.learnrow .appinfo small{font-size:8.5px}
+.learnrow button{border:0;background:transparent;color:var(--danger);font-size:12px;cursor:pointer}
+.auto-wrap{margin-top:8px;border:1px solid var(--line);background:var(--panel2);border-radius:10px;padding:8px 10px}
+.auto-wrap .bar{height:5px;margin-top:6px}
+.auto-label{font-size:9px;color:var(--muted);display:flex;justify-content:space-between;gap:6px}
+.pendingbox{border:1px solid rgba(201,247,126,.25);background:rgba(201,247,126,.06);border-radius:10px;padding:8px 10px;font-size:9.5px;color:var(--flash);margin-top:7px;display:none}
+.pendingbox.on{display:block}
+.keycap{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line2);border-radius:6px;background:var(--panel);padding:1px 6px;font-size:9px;color:var(--text)}
+
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="header">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">
+        <svg viewBox="0 0 40 40"><path d="M13.5 9.5h15a4.5 4.5 0 0 1 4.5 4.5v9a4.5 4.5 0 0 1-4.5 4.5h-7.2L14 32.2v-4.8h-.5A4.5 4.5 0 0 1 9 22.9v-8.9a4.5 4.5 0 0 1 4.5-4.5Z" fill="#fff"/><path d="M23.8 13.2l-7.1 9.3h4.7l-2.2 7.2 7.7-10.1h-4.8l1.7-6.4Z" fill="#6b43dc"/></svg>
+      </div>
+      <div><b>تیواچت</b><small><span class="dot"></span> روی دستگاه • آفلاین</small></div>
+    </div>
+    <div class="hbtns">
+      <button class="iconbtn closebtn" id="minBtn" aria-label="کوچک کردن به آیکون شناور">⌄</button>
+      <button class="iconbtn closebtn" id="closeBtn" aria-label="بستن پنجره شناور">✕</button>
+      <button class="iconbtn expandbtn" id="expandBtn" aria-label="باز کردن برنامه کامل">⤢</button>
+      <button class="iconbtn" id="themeBtn" aria-label="تغییر حالت روشن و تاریک">◐</button>
+      <button class="iconbtn" id="menuBtn" aria-label="تنظیمات">⋯</button>
+    </div>
+  </header>
+
+  <main id="scroller">
+    <!-- CHAT -->
+    <section class="page active" id="page-chat">
+      <div class="hero" id="heroBox">
+        <h1>بگو، <em>تیواچت</em><br>انجامش می‌دهد.</h1>
+        <p>دستیار فارسی روی گوشی شما؛ دستور را می‌فهمد و اگر مطمئن باشد اجرا می‌کند. کارهای حساس فقط با تأیید شما.</p>
+        <div class="pills"><span class="pill">● اجرا روی دستگاه</span><span class="pill">● بدون ارسال داده</span><span class="pill">● تأیید عملیات حساس</span></div>
+      </div>
+      <div class="chat" id="chat"></div>
+      <div class="suggest" id="suggest"></div>
+      <div class="footerhint"><span>پردازش محلی • بدون سرور</span><span id="engineHint">موتور قواعد فارسی</span></div>
+    </section>
+
+    <!-- DEVICE -->
+    <section class="page" id="page-device">
+      <h2 class="ptitle">وضعیت دستگاه</h2>
+      <p class="sup">اطلاعات مستقیم از سیستم‌عامل گوشی شما خوانده می‌شود. داده‌ای جایی ارسال نمی‌شود.</p>
+      <div class="section">
+        <div class="section-h"><b>گزارش زنده</b><button class="link" id="refreshBtn">به‌روزرسانی</button></div>
+        <div class="stack" id="deviceCards"></div>
+      </div>
+      <div class="section">
+        <div class="section-h"><b>میان‌برهای امن</b></div>
+        <div class="quick">
+          <button data-quick="battery"><i>🔋</i><span>گزارش باتری</span></button>
+          <button data-quick="ram"><i>⚡</i><span>وضعیت رم</span></button>
+          <button data-quick="storage"><i>💾</i><span>حافظه و فضا</span></button>
+          <button data-quick="temp"><i>🌡️</i><span>دما و پردازنده</span></button>
+          <button data-quick="settings-battery"><i>🔧</i><span>بهینه‌سازی باتری</span></button>
+          <button data-quick="settings-apps"><i>📱</i><span>مدیریت برنامه‌ها</span></button>
+        </div>
+      </div>
+      <div class="notice">اندروید ۱۱ و بالاتر اجازهٔ پاک‌کردن کش سایر برنامه‌ها را به اپ‌های غیرسیستمی نمی‌دهد. تیواچت به‌جای ادعای پاک‌سازی، مسیر رسمی تنظیمات را باز می‌کند.</div>
+    </section>
+
+    <!-- APPS -->
+    <section class="page" id="page-apps">
+      <div class="section-h"><div><h2 class="ptitle">برنامه‌ها</h2><p class="sup" id="appsCount">در حال خواندن برنامه‌های نصب‌شده…</p></div><button class="link" id="reloadApps">تازه‌سازی</button></div>
+      <div class="searchbox"><span>🔍</span><input id="appSearch" placeholder="جست‌وجوی نام یا پکیج برنامه" autocomplete="off"><button class="link" id="clearSearch" style="display:none">پاک کردن</button></div>
+      <div id="appsList"></div>
+    </section>
+
+    <!-- VAULT -->
+    <section class="page" id="page-vault">
+      <h2 class="ptitle">گاوصندوق رمز</h2>
+      <p class="sup">رمزها با AES-256-GCM و کلید Android Keystore فقط روی همین دستگاه ذخیره می‌شوند. مشاهدهٔ آن‌ها نیازمند تأیید هویت دستگاه است.</p>
+      <div id="vaultLocked" class="locked">
+        <div class="lockring">🔒</div>
+        <h3>گاوصندوق قفل است</h3>
+        <p>با اثر انگشت یا قفل صفحه باز کنید.<br>هیچ رمزی به سرور یا فضای ابری ارسال نمی‌شود.</p>
+        <button class="btn primary" id="unlockBtn">باز کردن با تأیید هویت</button>
+      </div>
+      <div id="vaultOpen" style="display:none">
+        <div class="section-h"><b id="vaultCount">رمزهای ذخیره‌شده</b><button class="link" id="lockBtn">قفل کردن</button></div>
+        <div id="vaultList"></div>
+        <div class="section">
+          <div class="section-h"><b>افزودن رمز</b></div>
+          <div class="field"><label for="vApp">نام برنامه</label><input id="vApp" placeholder="مثلاً تلگرام" autocomplete="off"></div>
+          <div class="field"><label for="vUser">نام کاربری (اختیاری)</label><input id="vUser" placeholder="نام کاربری یا ایمیل" autocomplete="off"></div>
+          <div class="field"><label for="vPass">رمز</label><input id="vPass" type="password" placeholder="رمز برنامه" autocomplete="new-password"></div>
+          <button class="btn primary" id="vaultSave" style="width:100%;justify-content:center;margin-top:4px">ذخیرهٔ رمزنگاری‌شده</button>
+        </div>
+      </div>
+      <div class="notice warn" style="margin-top:10px">برنامه‌های بانکی و اپ‌هایی که از FLAG_SECURE استفاده می‌کنند، تکمیل خودکار رمز را مسدود می‌کنند؛ تیواچت در آن‌ها فقط رمز را نشان می‌دهد و ورود خودکار انجام نمی‌دهد.</div>
+    </section>
+
+    <!-- GUIDE -->
+    <section class="page" id="page-guide">
+      <h2 class="ptitle">راه‌اندازی و مجوزها</h2>
+      <p class="sup">برای بهترین تجربه، این موارد را یک‌بار فعال کنید. تیواچت هیچ دسترسی روت یا تغییر فایل سیستمی نمی‌خواهد.</p>
+      <div class="section">
+        <div class="section-h"><b>وضعیت دسترسی‌ها</b><button class="link" id="refreshPerm">بررسی دوباره</button></div>
+        <div id="permList"></div>
+      </div>
+      <div class="section">
+        <div class="section-h"><b>راهنمای MIUI / Redmi</b></div>
+        <div class="checklist" id="miuiList">
+          <button class="check on"><span class="checkbox">✓</span>اجرای خودکار (Autostart) روشن باشد</button>
+          <button class="check"><span class="checkbox">✓</span>بهینه‌سازی باتری برای تیواچت آزاد باشد</button>
+          <button class="check"><span class="checkbox">✓</span>نمایش روی برنامه‌های دیگر مجاز باشد</button>
+          <button class="check"><span class="checkbox">✓</span>سرویس دسترس‌پذیری فعال باشد</button>
+          <button class="check"><span class="checkbox">✓</span>آیکون شناور از اعلان دائمی بسته نشود</button>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-h"><b>ایمنی و شفافیت</b></div>
+        <div class="notice">
+          • حذف برنامه، تماس، پیامک و حذف رمز با دیالوگ تأیید انجام می‌شوند.<br>
+          • مدل زبانی بزرگ روی این گوشی اجرا نمی‌شود؛ تشخیص دستور با موتور قواعد فارسی و آستانهٔ اطمینان است.<br>
+          • دستورات نامطمئن اجرا نمی‌شوند و از شما شفاف‌سازی می‌خواهند.<br>
+          • آیکون شناور با اجازهٔ شما فعال می‌شود و در هر زمان بسته می‌شود.
+        </div>
+      </div>
+      <p style="text-align:center;color:var(--muted);font-size:9.5px">تیواچت وی‌فلش • نسخه <span id="appVer">۱.۰.۰</span></p>
+    </section>
+
+    <section class="page" id="page-training">
+      <h2 class="ptitle">آموزش تیواچت</h2>
+      <p class="sup">دستورهای ساده، محاوره‌ای و چندمرحله‌ای. پایگاه دانش آفلاین، الگوهای فارسی و نام‌های محاوره‌ای را ترکیب می‌کند.</p>
+      <div class="statrow" id="kbStats"></div>
+      <div class="section">
+        <div class="section-h"><b>دستورهای چندمرحله‌ای</b><span style="font-size:9px;color:var(--mint)">جدید</span></div>
+        <div class="lesson"><b>باز کردن برنامه + نوشتن پیام</b><p>اول برنامه باز می‌شود، گفتگو با نام مخاطب جست‌وجو می‌شود و متن فقط در کادر پیام نوشته می‌شود. ارسال نهایی را خودتان انجام می‌دهید.</p>
+          <div class="ex"><button data-say="تلگرام رو باز کن و در پیام های شخصی بنویس سلام">تلگرام رو باز کن و در پیام های شخصی بنویس سلام</button><button data-say="واتساپ رو باز کن و به علی پیام بنویس سلام">واتساپ باز کن و به علی بنویس سلام</button><button data-say="تلگرام باز کن به مینا بگو فردا می بینمت">تلگرام باز کن به مینا بگو فردا می‌بینمت</button></div>
+          <p style="margin-top:6px;color:var(--flash)">اگر مخاطب را نگویید، تیواچت قبل از هر کاری نام مخاطب را می‌پرسد.</p>
+        </div>
+        <div class="lesson"><b>استفاده از نام محاوره‌ای و فینگلیش</b><p>نام‌های «تلگرامو بیار»، «واتساپ باز کن»، «chrome رو باز کن» و «برو تو اینستا» به پکیج واقعی نصب‌شده متصل می‌شوند.</p>
+          <div class="ex"><button data-say="تلگرامو بیار">تلگرامو بیار</button><button data-say="chrome رو باز کن">chrome رو باز کن</button><button data-say="برو تو اینستا">برو تو اینستا</button></div>
+        </div>
+        <div class="lesson"><b>تقویم و زمان</b><p>آلارم، تایمر، تماس و پیامک با مسیرهای رسمی سیستم و تأیید نهایی اجرا می‌شوند.</p>
+          <div class="ex"><button data-say="آلارم ۷ صبح بذار">آلارم ۷ صبح</button><button data-say="تایمر ۱۰ دقیقه بذار">تایمر ۱۰ دقیقه</button><button data-say="به 09121234567 زنگ بزن">تماس با شماره</button></div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-h"><b>چطور از هر جا بازش کنم؟</b></div>
+        <div class="lesson"><b>ایمنی لمس‌ها (مهم)</b><p>پنجرهٔ شناور یک کارت کوچک است و هیچ‌وقت تمام صفحه را نمی‌پوشاند. ضربهٔ بیرون کارت، آن را می‌بندد و همان لمس به برنامهٔ زیرین می‌رسد. دکمهٔ ✕ و اعلان «پایان دستیار» همیشه در دسترس‌اند.</p>
+          <div class="ex"><button data-say="وضعیت دسترسی‌ها">وضعیت دسترسی‌ها</button></div>
+        </div>
+        <div class="lesson"><b>آیکون شناور</b><p>وقتی روی برنامه‌های دیگر هستید، روی آیکون شناور ضربه بزنید تا همین پنجره شیشه‌ای باز شود. با دکمهٔ ✕ ببندید و به کارتان برگردید.</p></div>
+        <div class="lesson"><b>نوار باریک ژست لبه</b><p>برای اینکه لمس‌های صفحهٔ شما هرگز بلعیده نشود، یک نوار اختیاری ۱۶ پیکسلی در لبهٔ راست فعال می‌کنید. دو ضربه روی همان نوار، پنجره را باز می‌کند. پنجره فقط یک کارت کوچک است و بیرون آن، لمس‌ها به همان برنامه برمی‌گردند.</p></div>
+        <div class="lesson"><b>دو ضربه روی آیکون شناور</b><p>سریع‌ترین و مطمئن‌ترین راه: دو بار پشت سر هم روی آیکون شناور ضربه بزنید. دکمهٔ ⌄ پنجره را کوچک می‌کند و ✕ آن را می‌بندد و به برنامهٔ قبلی برمی‌گردد.</p></div>
+        <div class="lesson"><b>کاشی تنظیمات سریع و اعلان</b><p>کاشی «تیواچت» را به تنظیمات سریع اضافه کنید یا از اعلان دائمی روی «گفتگوی شناور» بزنید. پس از روشن‌شدن گوشی هم آیکون شناور خودکار برمی‌گردد (اگر روشن باشد).</p>
+          <div class="ex"><button data-say="وضعیت دسترسی‌ها">وضعیت دسترسی‌ها</button><button data-say="آیکون شناور رو روشن کن">راهنمای آیکون شناور</button></div>
+        </div>
+        <div class="notice warn">وقتی گوشی کامل خاموش است، هیچ اپ اندرویدی نمی‌تواند لمس را تشخیص دهد. ژست «دو انگشت روی کل صفحه» بدون روت و بدون بلعیدن لمس‌ها در همهٔ برنامه‌ها ممکن نیست؛ به همین دلیل تیواچت هرگز لایهٔ شفاف تمام‌صفحه نمی‌سازد. نوار لبهٔ اختیاری، آیکون شناور، کاشی تنظیمات سریع و اعلان دائمی، راه‌های مطمئن هستند.</div>
+      </div>
+      <div class="section">
+        <div class="section-h"><b>یادگیری شخصی</b><button class="link" id="clearLearned">پاک کردن یادگیری‌ها</button></div>
+        <p class="sup" style="margin-bottom:7px">اگر جملهٔ خاصی مدنظرتان است، آن را به یک کار وصل کنید؛ دفعهٔ بعد همان جمله شناخته می‌شود.</p>
+        <div id="learnedList"></div>
+        <div class="formrow"><label for="learnPhrase">جملهٔ شما</label><input id="learnPhrase" placeholder="مثلاً: بریم پیام بدیم" autocomplete="off"></div>
+        <div class="formrow"><label for="learnAction">کاری که انجام شود</label><select id="learnAction">
+          <option value="open-app">باز کردن برنامه</option><option value="battery">گزارش باتری</option><option value="ram">گزارش رم</option>
+          <option value="storage">گزارش حافظه</option><option value="temp">دما و پردازنده</option><option value="device-all">گزارش کامل دستگاه</option>
+          <option value="flash-on">روشن کردن چراغ‌قوه</option><option value="flash-off">خاموش کردن چراغ‌قوه</option>
+          <option value="settings-wifi">تنظیمات وای‌فای</option><option value="settings-bluetooth">تنظیمات بلوتوث</option>
+          <option value="settings-storage">حافظهٔ تنظیمات</option><option value="settings-apps">مدیریت برنامه‌ها</option>
+          <option value="search">جست‌وجوی وب</option><option value="compose">نوشتن پیام برای مخاطب</option>
+        </select></div>
+        <div class="formrow"><label for="learnDetail" id="learnDetailLabel">جزئیات (نام برنامه یا عبارت)</label><input id="learnDetail" placeholder="مثلاً تلگرام" autocomplete="off"></div>
+        <button class="btn primary" id="learnSave" style="width:100%;justify-content:center">به تیواچت یاد بده</button>
+      </div>
+      <div class="section">
+        <div class="section-h"><b>پایگاه دانش محلی</b><span style="font-size:9px;color:var(--muted)">آفلاین</span></div>
+        <div class="lesson"><b id="kbVersion">TivaChat Knowledge</b><p id="kbSummary"></p>
+          <p style="margin-top:6px">همهٔ داده‌ها روی دستگاه پردازش می‌شوند. نمونه‌های منفی و آستانهٔ اطمینان از اجرای اشتباه جلوگیری می‌کنند.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="nav" id="nav">
+    <button class="on" data-tab="chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-4-.9L3 21l1.9-4.8A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5Z"/></svg>گفتگو</button>
+    <button data-tab="device"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="2" width="14" height="20" rx="3"/><path d="M11 18h2"/></svg>دستگاه</button>
+    <button data-tab="apps"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>برنامه‌ها</button>
+    <button data-tab="training"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5Z"/><path d="M8 7h8M8 11h5"/></svg>آموزش</button>
+    <button data-tab="vault"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>گاوصندوق</button>
+  </footer>
+
+  <div class="pendingbox" id="pendingBox"></div>
+  <div class="composer" id="composer" style="margin:0 16px 3px">
+    <textarea id="input" rows="1" placeholder="دستورتان را بنویسید…" aria-label="دستور فارسی"></textarea>
+    <button class="rd" id="voiceBtn" aria-label="ورودی صوتی">🎙</button>
+    <button class="rd send" id="sendBtn" aria-label="ارسال">➤</button>
+  </div>
+</div>
+
+<div class="sheet" id="menuSheet"><div class="sheet-bg" data-close="sheet"></div><div class="sheet-box">
+  <h3>تنظیمات دستیار</h3>
+  <div class="setrow"><span>حالت روشن</span><button class="switch" id="lightSwitch"><i></i></button></div>
+  <div class="setrow"><span>آیکون شناور</span><button class="switch" id="bubbleSwitch"><i></i></button></div>
+  <div class="setrow"><span>نوار ژست لبه (ایمن)</span><button class="switch" id="edgeSwitch"><i></i></button></div>
+  <div class="setrow"><span>باز کردن تنظیمات مجوزها</span><button class="link" id="permLink">باز کردن</button></div>
+  <div class="setrow"><span>قفل گاوصندوق</span><button class="link" id="lockFromMenu">قفل</button></div>
+  <div class="setrow"><span>نسخه</span><span style="color:var(--muted)">۱.۰.۱</span></div>
+  <button class="btn primary" data-close="sheet" style="width:100%;justify-content:center;margin-top:14px">بستن</button>
+</div></div>
+
+<div class="modal" id="modal"><div class="modal-bg" data-close="modal"></div><div class="modal-box" id="modalBox"></div></div>
+<div class="toast" id="toast"></div>
+
+<script src="tiva_knowledge.js"></script>
+<script>
+(function(){
+"use strict";
+var B = window.TivaNative || null;
+var hasNative = !!B;
+var info = {};
+var apps = [];
+var lastInfoAt = 0;
+var busy = false;
+
+function $(id){ return document.getElementById(id); }
+function fa(n){ return String(n == null ? "" : n).replace(/[0-9]/g, function(d){ return "۰۱۲۳۴۵۶۷۸۹"[+d]; }); }
+function esc(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+function norm(s){
+  return String(s==null?"":s)
+    .toLowerCase()
+    .replace(/[يى]/g,"ی").replace(/ك/g,"ک").replace(/[ۀة]/g,"ه").replace(/[أإآ]/g,"ا")
+    .replace(/\u064a/g,"ی").replace(/\u0643/g,"ک")
+    .replace(/[\u064B-\u0652\u0640\u200c\u200d]/g," ")
+    .replace(/[۰-۹]/g,function(d){return String("۰۱۲۳۴۵۶۷۸۹".indexOf(d));})
+    .replace(/[٠-٩]/g,function(d){return String("٠١٢٣٤٥٦٧٨٩".indexOf(d));})
+    .replace(/[^0-9a-z\u0600-\u06ff\u200c\u200d\s:]/g," ")
+    .replace(/\s+/g," ").trim();
+}
+function wordTokens(text){ return norm(text).split(" ").filter(Boolean); }
+function hasWord(text, phrases){
+  var hay=wordTokens(text), list=Array.isArray(phrases)?phrases:[phrases];
+  return list.some(function(p){
+    var wanted=wordTokens(p); if(!wanted.length) return false;
+    for(var i=0;i<=hay.length-wanted.length;i++){
+      var ok=true;
+      for(var j=0;j<wanted.length;j++){ if(hay[i+j]!==wanted[j]){ ok=false; break; } }
+      if(ok) return true;
+    }
+    return false;
+  });
+}
+function hasAny(text, words){
+  var hay=wordTokens(text);
+  return words.some(function(w){ var ws=wordTokens(w); return ws.length===1 && hay.indexOf(ws[0])>-1; });
+}
+function stripWordSet(text, words){
+  var set={}; words.forEach(function(w){ wordTokens(w).forEach(function(x){set[x]=1;}); });
+  return wordTokens(text).filter(function(w){return w && !set[w];}).join(" ");
+}
+function call(name){
+  if(!B || typeof B[name] !== "function") return null;
+  try{ return B[name].apply(B, Array.prototype.slice.call(arguments,1)); }catch(e){ return null; }
+}
+function parseJson(raw, fallback){ if(!raw) return fallback; try{ return JSON.parse(raw); }catch(e){ return fallback; } }
+var KB = window.TIVA_KB || {aliases:{},examples:[],stats:{}};
+var LEARNED = (function(){ try{ return JSON.parse(localStorage.getItem("tiva_learned")||"[]"); }catch(e){ return []; } })();
+var pendingCompound = null;
+var FLOATING = false;
+try{ FLOATING = !!(location.search.indexOf("floating=1")>=0 || (B && typeof B.isFloating === "function" && B.isFloating())); }catch(e){ FLOATING=false; }
+function saveLearned(){ try{ localStorage.setItem("tiva_learned", JSON.stringify(LEARNED)); }catch(e){} }
+function setPendingUI(){
+  var box=$("pendingBox"); if(!box) return;
+  if(pendingCompound){ box.classList.add("on"); box.innerHTML="منتظر نام مخاطب برای «"+esc(pendingCompound.app.label)+"» • برای لغو بنویسید «لغو»"; }
+  else { box.classList.remove("on"); box.innerHTML=""; }
+}
+function clearPending(){ pendingCompound=null; setPendingUI(); }
+function renderLearned(){
+  var box=$("learnedList"); if(!box) return;
+  box.innerHTML = LEARNED.length ? LEARNED.map(function(l,i){ return '<div class="learnrow"><div class="avatar">✎</div><div class="appinfo"><b>'+esc(l.phrase)+'</b><small>'+esc(l.label||l.action)+'</small></div><button data-forget="'+i+'" aria-label="حذف">✕</button></div>'; }).join("") : '<div class="empty">هنوز چیزی یاد نگرفته‌اید. یک جمله و کار موردنظرتان را وارد کنید.</div>';
+}
+function renderTraining(){
+  var st=KB.stats||{};
+  if($("kbStats")) $("kbStats").innerHTML=
+    '<div><b>'+fa(st.examples||0)+'</b><small>نمونه آموزشی</small></div>'+
+    '<div><b>'+fa(st.classes||0)+'</b><small>کلاس قصد</small></div>'+
+    '<div><b>'+fa(st.aliases||0)+'</b><small>نام محاوره‌ای</small></div>';
+  if($("kbVersion")) $("kbVersion").textContent="پایگاه دانش تیواچت • نسخه "+(KB.version||"1.0.0");
+  if($("kbSummary")) $("kbSummary").textContent=(st.examples?fa(st.examples):"چند صد")+" نمونه با تنوع رسمی، محاوره، فینگلیش، غلط املایی، چندمرحله‌ای و داده منفی. الگوها روی دستگاه تطبیق داده می‌شوند و هیچ جمله‌ای ارسال نمی‌شود.";
+  renderLearned(); setPendingUI();
+}
+function toast(msg){
+  var t=$("toast"); t.textContent=msg; t.classList.add("show");
+  clearTimeout(t._h); t._h=setTimeout(function(){t.classList.remove("show");},2400);
+}
+function showPage(name){
+  document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active");});
+  var page=$("page-"+name); if(page) page.classList.add("active");
+  document.querySelectorAll("#nav button").forEach(function(b){b.classList.toggle("on", b.dataset.tab===name);});
+  $("composer").style.display = name==="chat" ? "flex" : "none";
+  $("scroller").scrollTop = 0;
+  if(name==="device") loadDevice(true);
+  if(name==="apps") loadApps();
+  if(name==="vault") loadVault();
+  if(name==="training") renderTraining();
+  if(name==="guide") loadPerms();
+}
+function goPage(name){ showPage(name); }
+
+/* ---------------- Device ---------------- */
+function loadDevice(render){
+  var raw = call("deviceInfo");
+  if(raw){ info = parseJson(raw, info) || info; lastInfoAt = Date.now(); }
+  else if(hasNative === false){
+    info = {battery:78,batteryTemp:35,voltage:4210,health:"خوب",status:"در حال شارژ",charging:true,ramTotal:6144,ramAvail:2150,ramUsed:3994,storageTotal:120,storageFree:38.6,storageUsed:81.4,cpu:"G90T",cores:8,cpuTemp:41,model:"Redmi Note 8 Pro",android:"10",arch:"arm64-v8a",uptime:312,apps:apps.length,overlay:false,accessibility:false,batteryOpt:false,notifications:true,vaultCount:0,version:"1.0.0"};
+  }
+  if(!render) return info;
+  var ramPct = Math.round((info.ramUsed/(info.ramTotal||1))*100);
+  var stPct = Math.round((info.storageUsed/(info.storageTotal||1))*100);
+  var cards=[
+    {t:"باتری",v:fa(info.battery||0)+"٪",s:(info.charging?"در حال شارژ":"در حال مصرف")+" • سلامت "+esc(info.health||"نامشخص"),bar:info.battery||0,sub:"<span>دما "+fa(info.batteryTemp||"—")+"°</span><span>"+fa(info.voltage||0)+" mV</span>"},
+    {t:"رم",v:fa(info.ramAvail||0)+" <small>/ "+fa(info.ramTotal||0)+" مگابایت</small>",s:"مصرف‌شده: "+fa(info.ramUsed||0)+" مگابایت",bar:ramPct,sub:"<span>مصرف "+fa(ramPct)+"٪</span><span>"+esc(info.model||"")+"</span>"},
+    {t:"حافظه",v:fa(info.storageFree||0)+" <small>گیگابایت آزاد</small>",s:"از "+fa(info.storageTotal||0)+" گیگابایت",bar:stPct,sub:"<span>مصرف "+fa(info.storageUsed||0)+" گیگابایت</span><span>"+fa(stPct)+"٪</span>"},
+    {t:"دما و پردازنده",v:fa(info.cpuTemp||info.batteryTemp||0)+"°",s:esc(info.cpu||"")+" • "+fa(info.cores||0)+" هسته",bar:Math.min(100,((info.cpuTemp||40)/90)*100),sub:"<span>باتری "+fa(info.batteryTemp||0)+"°</span><span>"+esc(info.arch||"")+"</span>"},
+    {t:"سیستم",v:esc(info.model||"—"),s:"اندروید "+fa(info.android||"—")+" • "+fa(info.apps||0)+" برنامه نصب‌شده",bar:0,sub:"<span>روشنایی "+fa(Math.floor((info.uptime||0)/60))+" ساعت</span><span>نسخه "+fa(info.version||"1.0.0")+"</span>"}
+  ];
+  $("deviceCards").innerHTML = cards.map(function(c){
+    return '<div class="metric"><div class="metric-h"><span>'+c.t+'</span><b>'+c.v+'</b></div><div class="bar"><i style="width:'+Math.max(2,Math.min(100,c.bar))+'%"></i></div><div class="sub"><span>'+c.s+'</span></div><div class="sub" style="margin-top:3px">'+c.sub+'</div></div>';
+  }).join("");
+  return info;
+}
+
+/* ---------------- Apps ---------------- */
+function loadApps(){
+  if(!apps.length){
+    var raw = call("listApps");
+    if(raw) apps = parseJson(raw, []) || [];
+  }
+  renderApps();
+}
+function appInitial(label){ var t=String(label||"?").trim(); return esc(t.charAt(0)); }
+function renderApps(){
+  var q = norm(($("appSearch").value||""));
+  var list = apps;
+  if(q){ list = apps.filter(function(a){ return norm(a.label).indexOf(q)>-1 || norm(a.pkg).indexOf(q)>-1; }); }
+  if(!hasNative && !apps.length){
+    apps = [{label:"تلگرام",pkg:"org.telegram.messenger",sys:false},{label:"Chrome",pkg:"com.android.chrome",sys:true},{label:"Settings",pkg:"com.android.settings",sys:true}];
+    list = apps;
+  }
+  $("appsCount").textContent = fa(apps.length)+" برنامه قابل اجرا • "+fa(list.length)+" نتیجه";
+  $("appsList").innerHTML = list.length ? list.slice(0,250).map(function(a){
+    return '<div class="approw"><div class="avatar">'+appInitial(a.label)+'</div><div class="appinfo"><b>'+esc(a.label)+'</b><small dir="ltr">'+esc(a.pkg)+'</small></div><div class="appbtns"><button class="open" data-open="'+esc(a.pkg)+'" title="باز کردن">▶</button><button data-info="'+esc(a.pkg)+'" title="اطلاعات برنامه">ⓘ</button></div></div>';
+  }).join("") : '<div class="empty">برنامه‌ای با این نام پیدا نشد.</div>';
+}
+
+/* ---------------- Vault ---------------- */
+var vaultUnlocked = false;
+function loadVault(){
+  if(!vaultUnlocked){ $("vaultLocked").style.display="block"; $("vaultOpen").style.display="none"; return; }
+  $("vaultLocked").style.display="none"; $("vaultOpen").style.display="block";
+  renderVault();
+}
+function renderVault(list){
+  var raw = call("vaultList");
+  var data = typeof list !== "undefined" ? list : parseJson(raw, []);
+  if(!Array.isArray(data)) data=[];
+  $("vaultList").innerHTML = data.length ? data.map(function(v){
+    return '<div class="vrow"><div class="avatar">'+appInitial(v.app)+'</div><div class="appinfo"><b>'+esc(v.app)+'</b><small>'+esc(v.username||"بدون نام کاربری")+'</small></div><div class="vbtns"><button data-reveal="'+esc(v.id)+'">👁</button><button data-del="'+esc(v.id)+'" style="color:var(--danger)">🗑</button></div></div>';
+  }).join("") : '<div class="empty">هنوز رمزی ذخیره نشده است.<br>اولین رمز را رمزنگاری‌شده و فقط روی دستگاه ذخیره کنید.</div>';
+  $("vaultCount").textContent = fa(data.length)+" رمز ذخیره‌شده";
+}
+function reveal(id){
+  var v = parseJson(call("vaultReveal", id), {});
+  if(!v.password){ toast("نمایش رمز ممکن نشد."); return; }
+  showModal('<h4>رمز '+esc(v.app)+'</h4><p>این رمز فقط روی دستگاه شماست. آن را در جایی ناامن یادداشت نکنید.</p><div class="secret">'+esc(v.password)+'</div><p>نام کاربری: '+esc(v.username||"—")+'</p><div class="modal-actions"><button class="btn primary" data-copy="'+esc(v.password)+'">کپی</button><button class="btn ghost" data-close="modal">بستن</button></div>');
+}
+
+/* ---------------- Permissions ---------------- */
+function loadPerms(){
+  var p = parseJson(call("permissions"), {overlay:false,accessibility:false,batteryOpt:false,notifications:true});
+  var items = [
+    {key:"overlay",t:"نمایش روی برنامه‌ها",d:"برای آیکون شناور و دسترسی سریع",i:"🪟",ok:!!p.overlay,s:"اجازه دادن"},
+    {key:"accessibility",t:"سرویس دسترس‌پذیری",d:"برای نوشتن پیام در پیام‌رسان‌ها، بازگشت/خانه و دو بار نوار لبه",i:"♿",ok:!!p.accessibility,s:"فعال‌سازی"},
+    {key:"batteryOpt",t:"بهینه‌سازی باتری",d:"برای منتظر نماندن در پس‌زمینه و آماده‌باش سبک",i:"🔋",ok:!!p.batteryOpt,s:"آزادسازی"},
+    {key:"notifications",t:"اعلان‌ها",d:"اعلان دائمی برای ماندن آیکون شناور",i:"🔔",ok:!!p.notifications,s:"اجازه دادن"}
+  ];
+  $("permList").innerHTML = items.map(function(it){
+    return '<div class="perm"><div class="pi">'+it.i+'</div><div class="pt"><b>'+it.t+'</b><small>'+it.d+'</small></div><button class="state '+(it.ok?'ok':'')+'" data-perm="'+it.key+'">'+(it.ok?'فعال':'درخواست')+'</button></div>';
+  }).join("");
+}
+function enablePerm(key){
+  if(key === "notifications"){ call("setBubble", true); loadPerms(); return; }
+  call("openPermission", key);
+  toast("تنظیمات مربوطه باز شد؛ گزینهٔ تیواچت را فعال کنید.");
+}
+
+/* ---------------- Intent engine ---------------- */
+var ALIASES = {
+  "تلگرام":"telegram","واتساپ":"whatsapp","واتس":"whatsapp","اینستا":"instagram","اینستاگرام":"instagram",
+  "یوتیوب":"youtube","کروم":"chrome","گوگل":"google","جی میل":"gmail","جیمیل":"gmail","نقشه":"maps","گوگل مپ":"maps",
+  "مایکت":"myket","بازار":"bazaar","روبیکا":"rubika","بله":"bale","بلو":"blu","بلد":"balad","شاد":"shad",
+  "عکاسی":"camera","دوربین":"camera","گالری":"gallery","تنظیمات":"settings","فایل":"file","مدیر فایل":"file",
+  "ماشین حساب":"calculator","سالنامه":"calendar","تقویم":"calendar","هوا":"weather","آب و هوا":"weather",
+  "ضبط":"recorder","اسکنر":"scanner","دانلود":"downloads","ساعت":"clock","یادداشت":"notes","موسیقی":"music",
+  "پلی استور":"play store","تلگرام ایکس":"telegram","چت جی پی تی":"chatgpt","جمینای":"gemini","کلود":"claude"
+};
+if(KB.aliases){ Object.keys(KB.aliases).forEach(function(key){ var v=KB.aliases[key]; ALIASES[key]=Array.isArray(v)?v[0]:v; }); }
+var OPEN_WORDS = /(باز|بازکن|برو|بیار|اجرا|شروع|وارد|ببینم|میخوام|می خوام|می خواهم|لطفا|کن|روشن)/;
+var BAD_CONTACT = { "پیام":1,"پیامهای":1,"پیام‌های":1,"پیامها":1,"شخصی":1,"در":1,"چت":1,"برنامه":1,"رو":1,"را":1,"بنویس":1,"بفرست":1,"برای":1,"به":1,"تلگرام":1,"واتساپ":1,"واتس":1,"اینستاگرام":1,"گروه":1,"کانال":1,"خودم":1,"من":1,"saved":1,"پیامرسان":1 };
+
+/* ---------- multi-step: open app + write a message ---------- */
+function composeResult(app, contact, message){
+  return {intent:"باز کردن برنامه و نوشتن پیام",confidence:.945,
+    reply:"«"+app.label+"» را باز می‌کنم، گفتگوی «"+contact+"» را پیدا می‌کنم و متن «"+message+"» را در کادر پیام می‌نویسم. ارسال نهایی را خودتان تأیید می‌کنید.",
+    type:"compose",app:app,contact:contact,message:message,safety:"بدون ارسال خودکار"};
+}
+function parseCompose(raw,t){
+  var writeRe=/(بنویس|تایپ کن|تایپ|پیام بنویس|پیام بده|پیام بذار|پیام بفرست|بفرست|بگو)/;
+  var openRe=/(باز|بازکن|برو|بیار|اجرا|وارد|ببینم)/;
+  if(!writeRe.test(t) || !openRe.test(t)) return null;
+  if(!apps.length){ try{ loadApps(); }catch(e){} }
+  var found=findApps(t);
+  if(!found.length){
+    return clarify(apps.slice(0,4).map(function(a){return "باز کردن "+a.label;}),"برنامه‌ای که پیام در آن نوشته شود را پیدا نکردم. کدام پیام‌رسان؟");
+  }
+  var app=found[0].app;
+  var wm=raw.match(writeRe);
+  if(!wm) return null;
+  var cut=wm.index;
+  var before=raw.slice(0,cut);
+  var after=raw.slice(cut+wm[0].length);
+  var contact="";
+  var cm=before.match(/(?:به|برای)\s+([\u0600-\u06FFA-Za-z0-9_\s]{2,28})/);
+  if(!cm) cm=before.match(/(?:در چت|توی چت|چت|گفتگوی|گفتگو با)\s+([\u0600-\u06FFA-Za-z0-9_\s]{2,28})/);
+  if(cm){
+    var words=cm[1].replace(/[\u060C,.!?؟]/g," ").split(/\s+/).filter(function(w){ return w && !BAD_CONTACT[w] && norm(w)!==norm(app.label); });
+    contact=words.slice(0,2).join(" ").trim();
+  }
+  var message=after
+    .replace(/^[\s:،,]+/,"")
+    .replace(/(در|توی|و در|و توی)\s*(پیام ?های شخصی|پیام ?ها|چت|گفتگو)/g," ")
+    .replace(/[«»"']/g,"")
+    .replace(/\s+/g," ")
+    .trim();
+  message=message.replace(/\s*(و)?\s*(بفرست|ارسال کن|بفرستش).*$/,"").trim();
+  if(!message) return clarify([], "متن پیام مشخص نشد. مثلاً بگویید: «تلگرام رو باز کن و به علی بنویس سلام»");
+  if(!contact){
+    pendingCompound={app:app,message:message};
+    setPendingUI();
+    return {intent:"نوشتن پیام چندمرحله‌ای",confidence:.9,
+      reply:"«"+app.label+"» را باز می‌کنم، اما برای اینکه اشتباه پیام ننویسم نام مخاطب لازم است. پیام برای چه کسی است؟",
+      type:"composeAsk",app:app,message:message,safety:"نیازمند نام مخاطب"};
+  }
+  return composeResult(app,contact,message);
+}
+function tryPendingTarget(raw){
+  if(!pendingCompound) return null;
+  var t=norm(raw);
+  if(/لغو|کنسل|بیخیال|ولش کن/.test(t)){ clearPending(); return {intent:"لغو شد",confidence:.99,reply:"عملیات چندمرحله‌ای لغو شد؛ هیچ پیامی نوشته نشد.",type:"none"}; }
+  if(!t) return null;
+  if(/(باز کن|گزارش|باتری|حافظه|دما|وای فای|بلوتوث|آلارم|تایمر|تماس|تنظیمات)/.test(t)){ clearPending(); return null; }
+  var words=raw.trim().split(/\s+/).filter(Boolean).slice(0,3);
+  if(!words.length) return null;
+  var contact=words.join(" ").replace(/^(به|برای)\s+/,"");
+  if(!contact || contact.length>28) return null;
+  var app=pendingCompound.app, message=pendingCompound.message;
+  clearPending();
+  return composeResult(app,contact,message);
+}
+function matchLearned(t){
+  for(var i=LEARNED.length-1;i>=0;i--){
+    var l=LEARNED[i]; var phrase=norm(l.phrase||"");
+    if(!phrase) continue;
+    if(phrase===t || t.indexOf(phrase)>-1) return applyLearned(l);
+  }
+  return null;
+}
+function applyLearned(l){
+  var app=null;
+  if(l.action==="open-app"){
+    app=apps.filter(function(a){return norm(a.label)===norm(l.detail)||norm(a.pkg)===norm(l.detail)||norm(a.pkg).indexOf(norm(l.detail))>-1;})[0];
+    if(!app) return clarify(apps.slice(0,4).map(function(a){return "باز کردن "+a.label;}),"برنامه «"+esc(l.detail)+"» پیدا نشد. کدام برنامه؟");
+    return {intent:"باز کردن برنامه (آموخته)",confidence:.96,reply:"طبق آموزشی که دادید، «"+app.label+"» را باز می‌کنم.",type:"openApp",app:app};
+  }
+  if(l.action==="battery") return Object.assign(deviceReply("battery"),{intent:"گزارش باتری (آموخته)"});
+  if(l.action==="ram") return Object.assign(deviceReply("ram"),{intent:"گزارش رم (آموخته)"});
+  if(l.action==="storage") return Object.assign(deviceReply("storage"),{intent:"گزارش حافظه (آموخته)"});
+  if(l.action==="temp") return Object.assign(deviceReply("temp"),{intent:"دما و پردازنده (آموخته)"});
+  if(l.action==="device-all") return Object.assign(deviceReply("all"),{intent:"گزارش کامل (آموخته)"});
+  if(l.action==="flash-on") return {intent:"چراغ‌قوه (آموخته)",confidence:.96,reply:"چراغ‌قوه را روشن می‌کنم.",type:"flashlight",payload:true};
+  if(l.action==="flash-off") return {intent:"چراغ‌قوه (آموخته)",confidence:.96,reply:"چراغ‌قوه را خاموش می‌کنم.",type:"flashlight",payload:false};
+  if(l.action.indexOf("settings-")===0) return {intent:"تنظیمات (آموخته)",confidence:.94,reply:"صفحهٔ رسمی تنظیمات را باز می‌کنم.",type:"settings",payload:l.action.replace("settings-","")};
+  if(l.action==="search") return {intent:"جست‌وجوی وب (آموخته)",confidence:.94,reply:"عبارت «"+esc(l.detail)+"» را جست‌وجو می‌کنم.",type:"search",payload:l.detail||"تیواچت"};
+  if(l.action==="compose"){
+    var parts=(l.detail||"").split("|").map(function(x){return x.trim();});
+    var c=parts[0]||"مخاطب", m=parts[1]||"سلام";
+    app=apps.filter(function(a){return /telegram|whatsapp|messag/i.test(a.pkg)||/تلگرام|واتساپ|پیام/.test(a.label);})[0];
+    if(!app) return clarify([],"برنامه پیام‌رسان پیدا نشد.");
+    return {intent:"نوشتن پیام (آموخته)",confidence:.94,reply:"«"+app.label+"» را باز می‌کنم و برای «"+c+"» متن «"+m+"» را می‌نویسم؛ ارسال نهایی با شماست.",type:"compose",app:app,contact:c,message:m,safety:"بدون ارسال خودکار"};
+  }
+  return null;
+}
+function deviceInfoSafe(){ var raw=call("deviceInfo"); if(raw) info=parseJson(raw,info)||info; return info; }
+
+/* ---------- deterministic parsers (word-boundary, Persian friendly) ---------- */
+var FA_DIGIT_MAP={"۰":"0","۱":"1","۲":"2","۳":"3","۴":"4","۵":"5","۶":"6","۷":"7","۸":"8","۹":"9","٠":"0","١":"1","٢":"2","٣":"3","٤":"4","٥":"5","٦":"6","٧":"7","٨":"8","٩":"9"};
+var FA_NUM_WORDS={ "صفر":0,"یک":1,"دو":2,"سه":3,"چهار":4,"پنج":5,"شش":6,"هفت":7,"هشت":8,"نه":9,"ده":10,"یازده":11,"دوازده":12,"سیزده":13,"چهارده":14,"پانزده":15,"شانزده":16,"هفده":17,"هجده":18,"نوزده":19,"بیست":20,"سی":30,"چهل":40,"پنجاه":50,"شصت":60 };
+function digitsOnlyText(x){
+  return String(x==null?"":x).replace(/[۰-۹٠-٩]/g,function(d){return FA_DIGIT_MAP[d]||"";}).toLowerCase().trim();
+}
+function numToken(token){
+  token=norm(token);
+  if(!token) return null;
+  if(/^\d+(?::\d+)?$/.test(token)) return parseInt(token.split(":")[0],10);
+  if(Object.prototype.hasOwnProperty.call(FA_NUM_WORDS,token)) return FA_NUM_WORDS[token];
+  return null;
+}
+function clockFromText(raw){
+  var x=digitsOnlyText(raw);
+  var m=x.match(/(?:^|\s|ساعت\s*)(\d{1,2})\s*[:.]\s*(\d{1,2})(?:\s|$)/);
+  if(!m) m=x.match(/(\d{1,2}):(\d{1,2})/);
+  var hour=null,minute=0;
+  if(m){ hour=parseInt(m[1],10); minute=parseInt(m[2],10); }
+  if(hour===null){
+    var toks=norm(raw).split(" ");
+    var start=0;
+    var si=toks.indexOf("ساعت"); if(si>-1) start=si+1;
+    for(var i=start;i<toks.length;i++){
+      var n=numToken(toks[i]);
+      if(n!==null && (n>=0 && n<=24)){ hour=n; start=i+1; break; }
+      if(toks[i]==="نیم" && hour===null){ hour=12; minute=30; start=i+1; break; }
+    }
+    if(hour!==null){
+      for(var j=start;j<toks.length;j++){
+        if(toks[j]==="و" && toks[j+1]==="نیم"){ minute=30; break; }
+        if(toks[j]==="و" && toks[j+1]==="ربع"){ minute=15; break; }
+        if(toks[j]==="نیم"){ minute=30; break; }
+        if(toks[j]==="ربع"){ minute=15; break; }
+        var mm=numToken(toks[j]);
+        if(mm!==null && mm>=0 && mm<=59 && j>start){ minute=mm; break; }
+      }
+    }
+  }
+  if(hour===null) return null;
+  var period=norm(raw);
+  var isNight=/(^|\s)(شب|عصر|بعد از ظهر|بعدازظهر)(\s|$)/.test(period);
+  if(isNight && hour<12) hour+=12;
+  if(hour===12 && /(^|\s)صبح(\s|$)/.test(period)) hour=0;
+  if(hour<0 || hour>23 || minute<0 || minute>59) return null;
+  return {hour:hour,minute:minute};
+}
+function durationFromText(raw){
+  var t=norm(raw);
+  var toks=t.split(" ");
+  var total=0, found=false;
+  function add(amount){ total+=amount; found=true; }
+  for(var i=0;i<toks.length;i++){
+    var tok=toks[i];
+    if(tok==="نیم" && toks[i+1]==="ساعت"){ add(1800); i++; continue; }
+    if(tok==="یک" && toks[i+1]==="ربع"){ add(900); i++; continue; }
+    if(tok==="ربع"){ add(900); continue; }
+    if(tok==="نیم"){ add(30); continue; }
+    var value=numToken(tok);
+    if(value===null) continue;
+    var unit=toks[i+1]||"";
+    if(unit==="ساعت" || unit==="ساعته"){
+      add(value*3600);
+      if(toks[i+2]==="و" && toks[i+3]==="نیم"){ add(1800); i+=3; } else { i++; }
+    } else if(unit==="دقیقه" || unit==="دقیقه‌ای" || unit==="دقیقه ای" || unit==="دقیقهای" || unit==="مین") { add(value*60); i++; }
+    else if(unit==="ثانیه" || unit==="ثانیه‌ای" || unit==="ثانیهای" || unit==="ثانیه ای" || unit==="ث") { add(value); i++; }
+  }
+  return found ? total : null;
+}
+function extractSearchQuery(raw){
+  var t=norm(raw);
+  var remove={"جستجو":1,"جستوجو":1,"جست‌وجو":1,"سرچ":1,"search":1,"کن":1,"بکن":1,"بجوی":1,"پیدا":1,"باز":1,"بازکن":1,"برو":1,"رو":1,"را":1,"و":1,"در":1,"به":1,"برای":1,"تو":1,"توی":1,"از":1,"گوگل":1,"کروم":1,"مرورگر":1,"اینترنت":1,"برام":1,"برایم":1,"میخوام":1,"می‌خوام":1,"میخواهم":1,"لطفا":1,"یه":1,"یک":1};
+  var hits=findApps(t);
+  hits.slice(0,4).forEach(function(hit){
+    wordTokens(hit.app.label).forEach(function(w){remove[w]=1;});
+    wordTokens(hit.app.pkg).forEach(function(w){remove[w]=1;});
+  });
+  var aliasMap=(KB&&KB.aliases)?KB.aliases:{};
+  Object.keys(aliasMap).forEach(function(fa){
+    if(t.indexOf(norm(fa))>-1){ wordTokens(fa).forEach(function(w){remove[w]=1;}); (aliasMap[fa]||[]).forEach(function(a){wordTokens(a).forEach(function(w){remove[w]=1;});}); }
+  });
+  var out=[];
+  t.split(" ").forEach(function(w){ if(w && !remove[w] && w.length>0) out.push(w); });
+  var q=out.join(" ").replace(/\s+/g," ").trim();
+  q=q.replace(/^(قیمت|هوای|ساعت|نتیجه)\s+\1/,"$1");
+  return q.length>=2?q:"";
+}
+function contactFromText(raw){
+  var numberRaw=digitsOnlyText(raw);
+  var nm=numberRaw.match(/(?:\+?98|0)?9\d{9}/);
+  var number=nm?nm[0]:"";
+  var t=norm(raw);
+  var stop={"به":1,"با":1,"برای":1,"از":1,"زنگ":1,"بزن":1,"تماس":1,"بگیر":1,"صحبت":1,"کن":1,"کنم":1,"موبایل":1,"شماره":1,"تلفن":1,"پیامک":1,"پیام":1,"اس":1,"ام":1,"بده":1,"بفرست":1,"گوشی":1,"لطفا":1,"برام":1,"با":1,"یک":1,"یه":1};
+  var rest=wordTokens(t).filter(function(w){return w && !stop[w] && !/^\d+$/.test(w);});
+  return {number:number, contact:rest.slice(0,4).join(" ").trim()};
+}
+function callLike(text){ return hasAny(text,["تماس","زنگ"]) || hasWord(text,["تماس بگیر","زنگ بزن","تماس بگیرم","زنگ بزنم"]); }
+function smsLike(text){ return hasAny(text,["پیامک","sms"]) || hasWord(text,["اس ام اس","پیام کوتاه"]); }
+function alarmLike(text){ return hasAny(text,["آلارم","الارم"]) || /بیدارم|بیدار کن|زنگ بیدار/.test(norm(text)); }
+function timerLike(text){ return hasAny(text,["تایمر","زمانسنج","کرنومتر","chromometer"]) || hasWord(text,["زمان سنج"]); }
+function cacheLike(text){ return hasWord(text,["کش","کش‌ها","کشها","cache","کش برنامه‌ها","کش برنامه ها"]); }
+function ramLike(text){ return hasWord(text,["رم","ram","حافظه موقت","حافظه رم","رم گوشی"]); }
+function storageLike(text){ return hasWord(text,["حافظه","فضا","فضای","استوریج","storage","ذخیره‌سازی","ذخیره سازی","گیگ","گیگابایت"]); }
+function tempLike(text){
+  if(hasWord(text,["دما","دمای","حرارت","گرمه","گرمای","داغ","پردازنده","cpu"])) return true;
+  return hasWord(text,["گرم"]) && (hasWord(text,["گوشی","دستگاه","باتری","پردازنده","موبایل","پشت گوشی"]));
+}
+function batteryLike(text){ return hasWord(text,["باتری","شارژ","battery"]); }
+function closeLike(text){ return hasAny(text,["ببند","بستن","بسته"]) || hasWord(text,["بیا بیرون","خروج از","از برنامه بیرون"]); }
+function hasQuestionAboutApp(text){ return hasWord(text,["چیست","چیه","معنی","یعنی","چطور کار"]); }
+function appOptions(res){
+  return res.options ? res.options.map(function(x){return "باز کردن "+x.app.label;}) : [];
+}
+
+function findApps(t){
+  var hay=wordTokens(t);
+  var hits=[];
+  function add(app,score,why){
+    if(!app) return;
+    for(var i=0;i<hits.length;i++){
+      if(hits[i].app.pkg===app.pkg){ if(score>hits[i].score){hits[i].score=score;hits[i].why=why;} return; }
+    }
+    hits.push({app:app,score:score,why:why||"label"});
+  }
+  function phraseIn(phrase){
+    var words=wordTokens(phrase); if(!words.length) return false;
+    for(var i=0;i<=hay.length-words.length;i++){
+      var ok=true;
+      for(var j=0;j<words.length;j++){ if(hay[i+j]!==words[j]){ ok=false; break; } }
+      if(ok) return true;
+    }
+    return false;
+  }
+  apps.forEach(function(a){
+    var label=norm(a.label), pkg=norm(a.pkg);
+    if(label && phraseIn(label)) add(a,0.99,"label");
+    else if(pkg && phraseIn(pkg)) add(a,0.97,"pkg");
+    else if(label && hay.join(" ").indexOf(label)>-1) add(a,0.92,"label-part");
+  });
+  var aliasMap=(KB && KB.aliases)?KB.aliases:{};
+  Object.keys(aliasMap).forEach(function(fa){
+    if(!phraseIn(fa)) return;
+    var aliases=aliasMap[fa]||[];
+    apps.forEach(function(a){
+      var label=norm(a.label), pkg=norm(a.pkg);
+      var tokenHit=aliases.some(function(token){ return phraseIn(token) || label.indexOf(norm(token))>-1 || pkg.indexOf(norm(token))>-1; });
+      if(tokenHit || label.indexOf(norm(fa))>-1) add(a,0.95,"alias:"+fa);
+    });
+  });
+  Object.keys(ALIASES).forEach(function(fa){
+    if(!phraseIn(fa)) return;
+    var token=norm(ALIASES[fa]);
+    apps.forEach(function(a){ if(norm(a.pkg).indexOf(token)>-1 || norm(a.label).indexOf(token)>-1) add(a,0.94,"alias2:"+fa); });
+  });
+  hits.sort(function(a,b){ return b.score-a.score || a.app.pkg.localeCompare(b.app.pkg); });
+  return hits;
+}
+function appChoice(query){
+  var found=findApps(query);
+  if(!found.length) return {found:found,app:null,ambiguous:false};
+  var topScore=found[0].score;
+  var top=found.filter(function(x){return x.score===topScore;});
+  return {found:found,app:top.length===1?top[0].app:null,ambiguous:top.length>1,options:top.slice(0,5)};
+}
+function deviceReply(kind){
+  var d=deviceInfoSafe();
+  if(kind==="battery") return {intent:"گزارش باتری",confidence:.97,reply:"وضعیت باتری خوانده شد.",details:[["سطح باتری",fa(d.battery)+"٪"],["وضعیت",d.status||"—"],["دما",fa(d.batteryTemp)+" درجه"],["سلامت",d.health||"—"],["ولتاژ",fa(d.voltage)+" میلی‌ولت"]],type:"battery"};
+  if(kind==="ram") return {intent:"گزارش رم",confidence:.96,reply:"حافظهٔ موقت دستگاه در این لحظه:",details:[["رم کل",fa(d.ramTotal)+" مگابایت"],["در دسترس",fa(d.ramAvail)+" مگابایت"],["مصرف‌شده",fa(d.ramUsed)+" مگابایت"],["وضعیت",d.lowRam?"کم‌بودن حافظه":"عادی"]],type:"ram"};
+  if(kind==="storage") return {intent:"گزارش حافظه",confidence:.95,reply:"فضای ذخیره‌سازی داخلی:",details:[["کل",fa(d.storageTotal)+" گیگابایت"],["آزاد",fa(d.storageFree)+" گیگابایت"],["مصرف‌شده",fa(d.storageUsed)+" گیگابایت"]],type:"storage"};
+  if(kind==="temp") return {intent:"دما و پردازنده",confidence:.95,reply:"دمای خوانده‌شده از سنسورهای دستگاه:",details:[["دمای پردازنده",fa(d.cpuTemp||d.batteryTemp)+" درجه"],["دمای باتری",fa(d.batteryTemp)+" درجه"],["پردازنده",d.cpu||"—"],["هسته‌ها",fa(d.cores)+" هسته"]],type:"temp"};
+  return {intent:"گزارش دستگاه",confidence:.96,reply:"گزارش کامل دستگاه: ",details:[["باتری",fa(d.battery)+"٪ • "+(d.charging?"شارژ":"مصرف")],["رم",fa(d.ramAvail)+" از "+fa(d.ramTotal)+" آزاد"],["حافظه",fa(d.storageFree)+" گیگابایت آزاد"],["دما",fa(d.cpuTemp||d.batteryTemp)+" درجه"],["برنامه‌ها",fa(d.apps)+" برنامه"]],type:"all"};
+}
+function clarify(options, text, confidence){
+  return {intent:"نیازمند شفاف‌سازی",confidence:confidence||.62,reply:text||"برای جلوگیری از اجرای اشتباه، مطمئن نیستم منظورتان کدام کار است. یکی از گزینه‌ها را انتخاب کنید.",clarify:options,type:"clarify"};
+}
+
+/* ---------- local knowledge-base matcher (novel Persian phrasings) ---------- */
+var KB_STOP={"و":1,"در":1,"به":1,"از":1,"برای":1,"را":1,"رو":1,"که":1,"با":1,"یه":1,"یک":1,"من":1,"را":1,"کن":1,"بکن":1,"لطفا":1,"میشه":1,"میخوام":1,"می":1,"خوام":1};
+function kbTokens(text){
+  return norm(text).split(" ").filter(function(w){ return w.length>1 && !KB_STOP[w]; });
+}
+function kbResult(intent){
+  var meta=(KB.intentMeta||{})[intent]||{label:"تشخیص پایگاه دانش"};
+  var d;
+  switch(intent){
+    case "battery": return Object.assign(deviceReply("battery"),{intent:meta.label,confidence:.89});
+    case "ram": return Object.assign(deviceReply("ram"),{intent:meta.label,confidence:.89});
+    case "storage": return Object.assign(deviceReply("storage"),{intent:meta.label,confidence:.89});
+    case "temperature": return Object.assign(deviceReply("temp"),{intent:meta.label,confidence:.89});
+    case "device_all": return Object.assign(deviceReply("all"),{intent:meta.label,confidence:.89});
+    case "flash_on": return {intent:meta.label,confidence:.9,reply:"چراغ‌قوه را روشن می‌کنم.",type:"flashlight",payload:true};
+    case "flash_off": return {intent:meta.label,confidence:.9,reply:"چراغ‌قوه را خاموش می‌کنم.",type:"flashlight",payload:false};
+    case "wifi_settings": return {intent:meta.label,confidence:.89,reply:"صفحهٔ وای‌فای را باز می‌کنم.",type:"settings",payload:"wifi"};
+    case "bluetooth_settings": return {intent:meta.label,confidence:.89,reply:"صفحهٔ بلوتوث را باز می‌کنم.",type:"settings",payload:"bluetooth"};
+    case "brightness": return {intent:meta.label,confidence:.88,reply:"تنظیمات روشنایی نمایشگر را باز می‌کنم.",type:"settings",payload:"display"};
+    case "sound": return {intent:meta.label,confidence:.88,reply:"تنظیمات صدا را باز می‌کنم.",type:"settings",payload:"sound"};
+    case "clean_cache": return {intent:meta.label,confidence:.88,reply:"اندروید اجازهٔ پاک‌کردن مستقیم کش برنامه‌های دیگر را نمی‌دهد؛ صفحهٔ حافظه را باز می‌کنم.",type:"settings",payload:"storage"};
+    case "open_settings": return {intent:meta.label,confidence:.88,reply:"تنظیمات را باز می‌کنم.",type:"settings",payload:""};
+    case "open_apps_settings": return {intent:meta.label,confidence:.88,reply:"مدیریت برنامه‌ها را باز می‌کنم.",type:"settings",payload:"apps"};
+    case "open_downloads": return {intent:meta.label,confidence:.88,reply:"حافظه و دانلودها را باز می‌کنم.",type:"settings",payload:"storage"};
+    case "list_heavy_apps": return {intent:meta.label,confidence:.88,reply:"مدیریت برنامه‌ها را باز می‌کنم تا مصرف هر برنامه را ببینید.",type:"settings",payload:"apps"};
+    case "open_gallery": case "open_camera": {
+      var wanted=intent==="open_gallery"?/گالری|photos|gallery/i:/دوربین|camera/i;
+      var app=apps.filter(function(a){return wanted.test(a.label)||wanted.test(a.pkg);})[0];
+      if(app) return {intent:meta.label,confidence:.91,reply:"«"+app.label+"» را باز می‌کنم.",type:"openApp",app:app};
+      return {intent:meta.label,confidence:.87,reply:"برنامهٔ مرتبط را پیدا نکردم.",clarify:["لیست برنامه‌ها"],type:"clarify"};
+    }
+    case "alarm": return {intent:meta.label,confidence:.87,reply:"صفحهٔ آلارم را باز می‌کنم.",type:"alarm",payload:7};
+    case "timer": return {intent:meta.label,confidence:.87,reply:"تایمر ۵ دقیقه‌ای را باز می‌کنم.",type:"timer",payload:300};
+    case "negative": return clarify([],"این جمله در نمونه‌های منفی پایگاه دانش است و هیچ عملیاتی روی دستگاه اجرا نشد.",.8);
+    case "delete_photo": return {intent:meta.label,confidence:.88,reply:"حذف مستقیم رسانه انجام نمی‌شود؛ مرورگر رسمی رسانه باز می‌شود.",type:"mediaPicker",safety:"نیازمند اقدام شما"};
+    case "delete_file": return {intent:meta.label,confidence:.88,reply:"حذف مستقیم فایل انجام نمی‌شود؛ صفحهٔ رسمی فایل‌ها باز می‌شود.",type:"filePicker",safety:"نیازمند اقدام شما"};
+    case "uninstall_app": return clarify([],"برای حذف برنامه، نام دقیق آن را بگویید؛ حذف نهایی فقط از صفحهٔ سیستمی با تأیید شما انجام می‌شود.",.86);
+    case "close_app": return clarify([],"نام برنامه‌ای که باید بسته شود را بگویید; صفحهٔ اطلاعات همان برنامه باز می‌شود.",.82);
+    case "open_app": return clarify([],"نام برنامهٔ مقصد را دقیق‌تر بگویید.",.82);
+    case "greeting": return {intent:meta.label,confidence:.9,reply:"سلام! در خدمتم. دستورتان را بگویید تا انجامش بدهم.",type:"none"};
+    case "thanks": return {intent:meta.label,confidence:.9,reply:"خواهش می‌کنم! هر دستوری داشتید بگویید.",type:"none"};
+    default: return null;
+  }
+}
+var KB_INDEX=null;
+function buildKBIndex(){
+  if(KB_INDEX) return KB_INDEX;
+  var index={}, tokenRows=[];
+  (KB.examples||[]).forEach(function(ex,i){
+    var toks=Array.from(new Set(wordTokens(ex.text)));
+    tokenRows.push(toks);
+    toks.forEach(function(tok){ if(!index[tok]) index[tok]=[]; index[tok].push(i); });
+  });
+  KB_INDEX={index:index,rows:tokenRows};
+  return KB_INDEX;
+}
+function matchKnowledge(t){
+  if(!KB.examples || !KB.examples.length) return null;
+  var tokens=kbTokens(t); if(tokens.length<2) return null;
+  var built=buildKBIndex(), candidates={};
+  tokens.forEach(function(tok){
+    var list=built.index[tok]; if(!list) return;
+    for(var i=0;i<list.length;i++){ candidates[list[i]]=(candidates[list[i]]||0)+1; }
+  });
+  var best=null;
+  Object.keys(candidates).forEach(function(idx){
+    var shared=candidates[idx];
+    if(shared<2) return;
+    var ex=KB.examples[idx];
+    var exTokens=built.rows[idx];
+    var coverage=shared/tokens.length;
+    var overlap=shared/Math.min(tokens.length,exTokens.length);
+    if(coverage<0.74 || overlap<0.66) return;
+    var score=coverage*0.65+overlap*0.35;
+    if(!best || score>best.score) best={intent:ex.intent,score:score,text:ex.text};
+  });
+  if(!best) return null;
+  return kbResult(best.intent);
+}
+function parseCommand(raw){
+  var t=norm(raw);
+  var learned=matchLearned(t); if(learned) return learned;
+  var pending=tryPendingTarget(raw); if(pending) return pending;
+  var compose=parseCompose(raw,t); if(compose) return compose;
+  if(!t) return clarify(["باتری چقدره؟","رم رو آزاد کن","تلگرام رو باز کن"]);
+
+  // ---------- operational and high-priority commands first ----------
+  if(alarmLike(t)){
+    var clock=clockFromText(raw);
+    if(!clock) return clarify(["آلارم ساعت ۷ صبح","آلارم ساعت ۶:۳۰"],"ساعت آلارم مشخص نشد؛ مثلاً بگویید «آلارم ساعت ۶:۳۰» یا «ساعت ۸ شب بیدارم کن».");
+    return {intent:"تنظیم آلارم",confidence:.96,reply:"آلارم ساعت "+fa(clock.hour)+":"+fa(String(clock.minute).padStart(2,"0"))+" را باز می‌کنم؛ ذخیرهٔ نهایی با شماست.",type:"alarm",payload:{hour:clock.hour,minute:clock.minute}};
+  }
+  if(timerLike(t)){
+    var seconds=durationFromText(raw);
+    if(!seconds) return clarify(["تایمر ۱۰ دقیقه","تایمر یک ساعت"],"مدت تایمر مشخص نشد؛ چند دقیقه یا چند ساعت باشد؟");
+    return {intent:"تنظیم تایمر",confidence:.95,reply:"تایمر "+fa(seconds)+" ثانیه‌ای را باز می‌کنم؛ شروع نهایی با شماست.",type:"timer",payload:seconds};
+  }
+  if(callLike(t)){
+    var c=contactFromText(raw);
+    if(!c.number && !c.contact) return clarify(["تماس با ۰۹۱۲۱۲۳۴۵۶۷","تماس با علی"],"برای تماس، شماره یا نام مخاطب را بگویید؛ بدون آن هیچ تماسی باز نمی‌شود.");
+    if(!c.number && c.contact) return {intent:"جست‌وجوی مخاطب برای تماس",confidence:.92,reply:"نام «"+c.contact+"» را در مخاطبین جست‌وجو می‌کنم. اگر مجوز مخاطبین نباشد یا چند نفر پیدا شوند، خودم از شما می‌پرسم. هیچ تماسی بدون تأیید شما برقرار نمی‌شود.",type:"callContact",payload:{contact:c.contact},safety:"نیازمند تأیید"};
+    return {intent:"برقراری تماس",confidence:.93,reply:"شماره‌گیر سیستم باز می‌شود و برقراری نهایی با شماست. هیچ تماسی بدون تأیید برقرار نمی‌شود.",type:"confirm",confirmType:"call",payload:{number:c.number,contact:c.contact},safety:"نیازمند تأیید"};
+  }
+  if(smsLike(t)){
+    var sm=contactFromText(raw);
+    if(!sm.number) return clarify(["پیامک به ۰۹۱۲۱۲۳۴۵۶۷"],"برای پیامک، شمارهٔ گیرنده را کامل بنویسید؛ ارسال خودکار بدون تأیید انجام نمی‌شود.");
+    return {intent:"ارسال پیامک",confidence:.92,reply:"پیش‌نویس پیامک برای شمارهٔ مشخص‌شده آماده می‌شود؛ ارسال نهایی فقط با تأیید شما انجام می‌شود.",type:"confirm",confirmType:"sms",payload:{number:sm.number,text:""},safety:"نیازمند تأیید"};
+  }
+  if(hasAny(t,["سرچ","جستجو","جست‌وجو","search"]) || hasWord(t,["جستجو کن","سرچ کن"])){
+    var q=extractSearchQuery(raw);
+    if(!q) return clarify(["قیمت دلار","هوای تهران"],"عبارت جست‌وجو مشخص نشد؛ آن را بنویسید.");
+    return {intent:"جست‌وجوی وب",confidence:.93,reply:"«"+q+"» را در مرورگر جست‌وجو می‌کنم.",type:"search",payload:q};
+  }
+
+  // cache must be tested before storage; exact token avoids کشور
+  if(cacheLike(t) && (hasAny(t,["پاک","خالی","حذف","تمیز","هنغام","بهینه","آزاد"]) || hasWord(t,["پاک کن","خالی کن","تمیز کن","حذف کن","بهینه کن"]))){
+    return {intent:"پاک‌سازی کش",confidence:.95,reply:"اندروید ۱۱+ اجازهٔ پاک‌کردن کش برنامه‌های دیگر را نمی‌دهد. برای پاک‌سازی امن، صفحهٔ حافظهٔ تنظیمات را باز می‌کنم؛ کش تیواچت هم از همان‌جا قابل پاک‌سازی است.",type:"settings",payload:"storage",safety:"هدایت به مسیر رسمی"};
+  }
+  if(hasAny(t,["چراغ قوه","چراغ‌قوه","flaslight","فلش","تورچ"]) || hasWord(t,["چراغ قوه","چراغ‌قوه"])){
+    var off=hasAny(t,["خاموش","قطع","ببند"]);
+    return {intent:off?"خاموش کردن چراغ‌قوه":"روشن کردن چراغ‌قوه",confidence:.96,reply:off?"چراغ‌قوه را خاموش می‌کنم.":"چراغ‌قوه را روشن می‌کنم.",type:"flashlight",payload:!off};
+  }
+  if(hasWord(t,["بستن","ببند","بسته"]) || hasAny(t,["ببند","بستن"]) || hasWord(t,["خروج از","بیا بیرون","از برنامه بیرون"])){
+    if(!hasWord(t,["برنامه","پنجره"])){
+      var target=appChoice(raw);
+      if(target.ambiguous){
+        return clarify(target.options.map(function(x){return "بستن "+x.app.label;}),"چند برنامه با این نام نصب است. کدام را ببندم؟");
+      }
+      if(target.app) return {intent:"بستن برنامه",confidence:.94,reply:"اندروید اجازه بستن مستقیم برنامه‌های دیگر را نمی‌دهد. صفحهٔ اطلاعات «"+target.app.label+"» را باز می‌کنم؛ در همان صفحه دکمهٔ Force stop را خودتان بزنید.",type:"appInfo",app:target.app,safety:"نیازمند اقدام شما"};
+      return clarify(["تلگرام را ببند","کروم را ببند"],"نام برنامه‌ای که باید بسته شود مشخص نشد.");
+    }
+  }
+
+  // delete intentions must never silently delete
+  var deleteWanted=hasAny(t,["حذف","پاک"]) || hasWord(t,["حذف کن","پاک کن","بردار","حذف شود","پاک شود"]);
+  if(deleteWanted){
+    if(cacheLike(t)) return {intent:"پاک‌سازی کش",confidence:.93,reply:"کش را نمی‌توانم مستقیم پاک کنم؛ صفحهٔ رسمی تنظیمات را باز می‌کنم.",type:"settings",payload:"storage",safety:"هدایت به مسیر رسمی"};
+    var mediaTokens=["عکس","تصویر","گالری","ویدیو","فیلم","آلبوم","سلفی","media"];
+    var fileTokens=["فایل","فایل‌ها","فایل ها","پوشه","دانلود","سند","pdf","zip","rar","apk","مدرک","بکاپ"];
+    var photo = hasAny(t,mediaTokens)||hasWord(t,mediaTokens);
+    var file = hasAny(t,fileTokens)||hasWord(t,fileTokens);
+    if(photo && !file) return {intent:"حذف عکس و ویدیو",confidence:.93,reply:"حذف مستقیم عکس یا ویدیو انجام نمی‌شود. مرورگر رسمی رسانه را باز می‌کنم؛ انتخاب و حذف نهایی را خودتان در سیستم تأیید کنید.",type:"mediaPicker",safety:"نیازمند اقدام شما"};
+    if(file || (hasWord(t,["فایل"])&&!photo)) return {intent:"حذف فایل",confidence:.92,reply:"حذف مستقیم فایل انجام نمی‌شود. صفحهٔ رسمی فایل‌ها را باز می‌کنم؛ انتخاب و حذف نهایی با تأیید شما در سیستم است.",type:"filePicker",safety:"نیازمند اقدام شما"};
+    var da=appChoice(raw);
+    if(da.app) return {intent:"حذف برنامه",confidence:.92,reply:"صفحهٔ اطلاعات «"+da.app.label+"» را باز می‌کنم؛ حذف نهایی فقط از دکمهٔ سیستمی و با تأیید شما انجام می‌شود.",type:"appInfo",app:da.app,safety:"نیازمند اقدام شما"};
+    if(da.ambiguous) return clarify(da.options.map(function(x){return "حذف "+x.app.label;}),"چند برنامه با این نام نصب است. کدام حذف شود؟");
+  }
+
+  if(hasWord(t,["وای فای","وای‌فای","wifi"])) return {intent:"تنظیمات وای‌فای",confidence:.94,reply:"صفحهٔ وای‌فای را باز می‌کنم؛ تغییر اتصال را خودتان تأیید کنید.",type:"settings",payload:"wifi",safety:"کنترل با شما"};
+  if(hasAny(t,["بلوتوث","bluetooth"])) return {intent:"تنظیمات بلوتوث",confidence:.93,reply:"صفحهٔ بلوتوث را باز می‌کنم؛ اتصال را خودتان تأیید کنید.",type:"settings",payload:"bluetooth",safety:"کنترل با شما"};
+  if(hasAny(t,["روشنایی","نور صفحه","نور نمایشگر"])) return {intent:"تنظیم روشنایی",confidence:.92,reply:"تنظیمات روشنایی نمایشگر را باز می‌کنم.",type:"settings",payload:"display"};
+  if(hasAny(t,["صدا","بلندی صدا","بی صدا"])) return {intent:"تنظیم صدا",confidence:.92,reply:"تنظیمات صدا را باز می‌کنم.",type:"settings",payload:"sound"};
+  if(hasWord(t,["گاوصندوق","پسورد","رمز"])) return {intent:"گاوصندوق رمز",confidence:.96,reply:"گاوصندوق رمزها روی همین دستگاه رمزنگاری شده است. برای مشاهده، تأیید هویت لازم است.",type:"vault",safety:"نیازمند تأیید هویت"};
+
+  // ---------- application-specific commands ----------
+  var appHit=appChoice(raw);
+  if(hasWord(t,["آموزش","یاد بده","یاد بگیر","راهنمای دستور"]) || hasWord(t,["چطور استفاده"])) return {intent:"آموزش دستیار",confidence:.93,reply:"صفحهٔ آموزش را باز می‌کنم؛ نمونه‌های آماده و دستورهای چندمرحله‌ای آنجا هستند.",type:"tab",payload:"training"};
+  if(hasAny(t,["دانلودها","دانلود"])) return {intent:"مدیریت فایل‌ها",confidence:.92,reply:"صفحهٔ حافظه و فایل‌ها را باز می‌کنم.",type:"settings",payload:"storage"};
+  if(hasAny(t,["گالری","آلبوم"])){
+    var gp=appChoice("گالری"); if(gp.app) return {intent:"باز کردن گالری",confidence:.94,reply:"«"+gp.app.label+"» را باز می‌کنم.",type:"openApp",app:gp.app};
+    return {intent:"باز کردن گالری",confidence:.9,reply:"گالری قابل اجرا پیدا نشد؛ فهرست برنامه‌ها را باز می‌کنم.",type:"tab",payload:"apps"};
+  }
+  if(hasAny(t,["دوربین"])){
+    var cp=appChoice("دوربین"); if(cp.app) return {intent:"باز کردن دوربین",confidence:.94,reply:"«"+cp.app.label+"» را باز می‌کنم.",type:"openApp",app:cp.app};
+    return {intent:"باز کردن دوربین",confidence:.9,reply:"دوربین قابل اجرا پیدا نشد؛ فهرست برنامه‌ها را باز می‌کنم.",type:"tab",payload:"apps"};
+  }
+  if(hasAny(t,["مدیریت برنامه‌ها","مدیریت برنامه ها","برنامه‌های نصب","فهرست برنامه"]) || hasWord(t,["برنامه‌ها","اپ‌ها","اپ ها"])) return {intent:"مدیریت برنامه‌ها",confidence:.92,reply:"فهرست برنامه‌ها را باز می‌کنم.",type:"tab",payload:"apps"};
+  if(hasAny(t,["پر مصرف","پرمصرف","سنگین","مصرف رم"])) return {intent:"برنامه‌های پرمصرف",confidence:.91,reply:"فهرست برنامه‌ها را باز می‌کنم تا مصرف هر برنامه را ببینید.",type:"tab",payload:"apps"};
+  if(hasAny(t,["تنظیمات"])) return {intent:"باز کردن تنظیمات",confidence:.93,reply:"تنظیمات را باز می‌کنم.",type:"settings",payload:"",safety:"در دسترس"};
+  if(appHit.ambiguous){
+    return clarify(appHit.options.map(function(x){return "باز کردن "+x.app.label;}),"چند برنامه با این نام نصب است. کدام را می‌خواهید؟");
+  }
+  if(appHit.app && !hasQuestionAboutApp(t)){
+    return {intent:"باز کردن برنامه",confidence:hasAny(t,["باز","بازکن","باز کن","برو","بیار"])||wordTokens(raw).length<=3?.96:.86,reply:"«"+appHit.app.label+"» را با پکیج واقعی نصب‌شده پیدا کردم و باز می‌کنم.",type:"openApp",app:appHit.app};
+  }
+
+  // ---------- information reports after operations ----------
+  if(batteryLike(t)) return deviceReply("battery");
+  if(ramLike(t)) return deviceReply("ram");
+  if(storageLike(t) && !cacheLike(t)) return deviceReply("storage");
+  if(tempLike(t)) return deviceReply("temp");
+  if(hasAny(t,["گزارش کامل","وضعیت گوشی","اطلاعات گوشی","چکاپ","همه چیز"])) return deviceReply("all");
+
+  if(/^(سلام|درود|صبح بخیر|شب بخیر|وقت بخیر|سلام خوبی|سلام چطوری|خوبی|حالت چطوره)[\s!.]*$/.test(t)) return {intent:"گفتگوی ساده",confidence:.97,reply:"سلام! آماده‌ام. می‌توانم باتری، رم، حافظه و دما را گزارش بدهم، برنامه‌ها را باز کنم و در آن‌ها متن پیام بنویسم، آلارم بگذارم یا وضعیت دسترسی‌ها را نشان دهم.",type:"none"};
+  if(/^(ممنون|مرسی|دستت درد نکنه|لطف کردی)[\s!.]*$/.test(t)) return {intent:"گفتگوی ساده",confidence:.96,reply:"خواهش می‌کنم! هر دستوری داشتید، همین‌جا هستم.",type:"none"};
+
+  // Knowledge base is consulted before the safe fallback (not only after regexes).
+  var kbMatch=matchKnowledge(t);
+  if(kbMatch) return kbMatch;
+  return clarify(["باتری گوشی چقدره؟","وضعیت رم و دما","تلگرام رو باز کن","چراغ‌قوه رو روشن کن","گزارش کامل دستگاه"], "این دستور در فهرست دستورات پشتیبانی‌شده نیست. برای جلوگیری از اجرای اشتباه، هیچ عملیاتی انجام نمی‌دهم.");
+}
+
+/* ---------------- Chat rendering ---------------- */
+var seq=0;
+function addUser(text){
+  $("heroBox").style.display="none";
+  var el=document.createElement("div"); el.className="msg me";
+  el.innerHTML='<div class="bubble">'+esc(text)+'</div>';
+  $("chat").appendChild(el); scrollChat();
+}
+function addAssistant(res){
+  var el=document.createElement("div"); el.className="msg"; seq++;
+  var low=res.confidence<.85;
+  if(res.type==="alarm" && res.payload) res.details=[["ساعت",fa(res.payload.hour)+":"+fa(String(res.payload.minute).padStart(2,"0"))],["برنامه","ساعت و آلارم"],["تأیید","نهایی با شما"]];
+  if(res.type==="timer" && res.payload) res.details=[["مدت",fa(res.payload)+" ثانیه"],["برنامه","ساعت و تایمر"],["تأیید","نهایی با شما"]];
+  var detailsHtml = res.details ? '<div class="grid2">'+res.details.map(function(d){return '<div class="tile"><small>'+esc(d[0])+'</small><b>'+esc(d[1])+'</b></div>';}).join("")+'</div>' : "";
+  var clarifyHtml = res.clarify ? '<div class="chips">'+res.clarify.map(function(c){return '<button data-say="'+esc(c)+'">'+esc(c)+'</button>';}).join("")+'</div>' : "";
+  var safetyHtml = res.type==="confirm" ? '<div class="actions"><button class="btn primary" data-confirm="'+esc(JSON.stringify(res.payload))+'" data-confirm-type="'+esc(res.confirmType||"call")+'">تأیید و ادامه</button><button class="btn ghost" data-say="لغو">لغو</button></div>' : "";
+  el.innerHTML='<div class="orb"><svg viewBox="0 0 24 24"><path d="M13.6 2.2 5.4 13.1h5.3l-1.9 8.7 8.9-12.1h-5.5l1.4-7.5Z" fill="#fff"/></svg></div>'+
+    '<div style="min-width:0;flex:1"><div class="bubble">'+esc(res.reply)+'</div>'+
+    '<div class="card"><div class="card-top"><span class="intent">'+esc(res.intent)+'</span><span class="conf '+(low?'low':'')+'">'+fa(Math.round(res.confidence*100))+'٪</span></div>'+
+    '<div class="card-body"><div class="bar"><i style="width:'+Math.round(res.confidence*100)+'%"></i></div>'+detailsHtml+
+    '<div class="status" data-status><span class="dot"></span>'+(low?'زیر آستانه اطمینان؛ عملیاتی اجرا نشد.':'در حال انجام بررسی ایمنی…')+'</div>'+clarifyHtml+safetyHtml+'</div></div></div>';
+  el._res=res;
+  $("chat").appendChild(el); scrollChat();
+  if(res.type==="none"){ setStatus(el,"آمادهٔ دریافت دستور بعدی.","ok"); return; }
+  execute(el,res);
+  return el;
+}
+function setStatus(el,text,kind){
+  var s=el.querySelector("[data-status]"); if(!s) return;
+  s.className="status "+(kind||"");
+  s.innerHTML=(kind==="ok"?"✓ ":kind==="err"?"! ":'<span class="spin"></span> ')+esc(text);
+}
+function resultToStatus(el,res){
+  if(!res){ setStatus(el,"نتیجه‌ای از دستگاه دریافت نشد.","err"); return; }
+  if(res.ok===false){ setStatus(el,res.message||"اقدام انجام نشد.","err"); toast(res.message||"اقدام انجام نشد."); return; }
+  setStatus(el,res.message||"انجام شد.","ok");
+}
+function execute(el,res){
+  try{
+    switch(res.type){
+      case "battery": case "ram": case "storage": case "temp": case "all":
+        loadDevice(true); setStatus(el,"گزارش از سیستم‌عامل خوانده شد.","ok"); break;
+      case "openApp":
+        var app=res.app;
+        var r=parseJson(call("openApp",app.pkg),{ok:false,message:"برنامه باز نشد."});
+        resultToStatus(el,r);
+        if(r.ok){ var b=el.querySelector(".card-body"); b.insertAdjacentHTML("afterbegin",'<div class="grid2" style="margin-top:0;margin-bottom:8px"><div class="tile"><small>برنامه</small><b>'+esc(app.label)+'</b></div><div class="tile"><small>پکیج</small><b dir="ltr" style="font-size:9.5px">'+esc(app.pkg)+'</b></div></div>'); }
+        break;
+      case "accessibility":
+        var ac=parseJson(call("accessibilityAction",res.payload),{ok:false,message:"سرویس دسترس‌پذیری فعال نیست."});
+        resultToStatus(el,ac); break;
+      case "flashlight":
+        var f=parseJson(call("flashlight",!!res.payload),{ok:false,message:"چراغ‌قوه در دسترس نیست."});
+        resultToStatus(el,f); break;
+      case "search":
+        if(!res.payload){ setStatus(el,"عبارت جست‌وجو مشخص نشد.","err"); break; }
+        var s=parseJson(call("searchWeb",res.payload),{ok:false,message:"مرورگر باز نشد."});
+        resultToStatus(el,s); break;
+      case "settings": call("openSettings",res.payload); setStatus(el,"صفحهٔ رسمی تنظیمات باز شد؛ تغییر را خودتان تأیید کنید.","ok"); break;
+      case "appInfo":
+        var ai=parseJson(call("openAppInfo",res.app.pkg),{ok:false,message:"صفحهٔ اطلاعات برنامه باز نشد."});
+        resultToStatus(el,ai); break;
+      case "mediaPicker":
+        var mp=parseJson(call("openMediaPicker","image/*"),{ok:false,message:"مرورگر رسانه باز نشد."});
+        resultToStatus(el,mp); break;
+      case "filePicker":
+        var fp=parseJson(call("openFilePicker"),{ok:false,message:"صفحهٔ فایل‌ها باز نشد."});
+        resultToStatus(el,fp); break;
+      case "tab": goPage(res.payload); setStatus(el,"بخش موردنظر باز شد.","ok"); break;
+      case "alarm":
+        var at=res.payload||{hour:7,minute:0};
+        var a=parseJson(call("setAlarm",at.hour,at.minute,"تیواچت"),{ok:false,message:"تنظیم آلارم ممکن نشد."});
+        resultToStatus(el,a); break;
+      case "timer":
+        var tm=parseJson(call("setTimer",res.payload,"تیواچت"),{ok:false,message:"تنظیم تایمر ممکن نشد."});
+        resultToStatus(el,tm); break;
+      case "compose":
+        window.__automationMsg=el;
+        var cb=el.querySelector(".card-body");
+        if(cb && !cb.querySelector("[data-autobar]")) cb.insertAdjacentHTML("beforeend",'<div class="auto-wrap"><div class="auto-label"><span>اجرای مرحله‌به‌مرحله</span><span data-autopct>۰٪</span></div><div class="bar"><i data-autobar style="width:4%"></i></div><div class="auto-label" style="margin-top:5px"><span>در حال آماده‌سازی…</span><span>بدون ارسال خودکار</span></div></div>');
+        var ar=parseJson(call("composeMessage",res.app.pkg,res.contact,res.message,false),{started:false,message:"پل بومی در دسترس نیست."});
+        if(!ar.started){ window.__automationMsg=null; setStatus(el,ar.message||"شروع نوشتن پیام ممکن نشد.","err"); }
+        else setStatus(el,ar.message||"برنامه باز شد؛ در حال جست‌وجوی گفتگو…");
+        break;
+      case "composeAsk":
+        setStatus(el,"منتظر نام مخاطب • «لغو» برای انصراف",""); break;
+      case "vault": goPage("vault"); setStatus(el,"گاوصندوق قفل است؛ برای مشاهدهٔ رمزها تأیید هویت لازم است.","ok"); break;
+      case "callContact":
+        var cr=parseJson(call("resolveContact",res.payload.contact),{ok:false,message:"جست‌وجوی مخاطب باز نشد."});
+        resultToStatus(el,cr); break;
+      case "confirm":
+        setStatus(el,"برای ادامه، دکمهٔ تأیید را بزنید.",""); break;
+      case "clarify":
+        setStatus(el,"هیچ عملیاتی اجرا نشد.","err"); break;
+      default: setStatus(el,"آمادهٔ دریافت دستور بعدی.","ok");
+    }
+  }catch(err){ setStatus(el,"خطای پیش‌بینی‌نشده؛ عملیاتی انجام نشد.","err"); }
+}
+function scrollChat(){ var s=$("scroller"); setTimeout(function(){ s.scrollTop=s.scrollHeight; },40); }
+
+/* ---------------- Chat actions ---------------- */
+var SUGGESTIONS=["تلگرام رو باز کن و به علی بنویس سلام","باتری چقدره؟","تلگرامو بیار","وضعیت رم و دما","چراغ‌قوه رو روشن کن","آلارم ۷ صبح","آموزش دستورها"];
+function renderSuggest(){
+  $("suggest").innerHTML=SUGGESTIONS.map(function(s){ return '<button data-say="'+esc(s)+'">'+esc(s)+'</button>'; }).join("");
+}
+function submit(text){
+  text=(text||$("input").value||"").trim(); if(!text||busy) return;
+  busy=true; $("input").value=""; $("input").style.height="auto";
+  addUser(text);
+  setTimeout(function(){
+    var res=parseCommand(text);
+    addAssistant(res);
+    busy=false;
+  }, 180);
+}
+
+/* ---------------- Event wiring ---------------- */
+$("sendBtn").addEventListener("click",function(){ submit(); });
+$("input").addEventListener("keydown",function(e){ if(e.key==="Enter"&&!e.shiftKey){ e.preventDefault(); submit(); } });
+$("input").addEventListener("input",function(){ this.style.height="auto"; this.style.height=Math.min(this.scrollHeight,92)+"px"; });
+$("voiceBtn").addEventListener("click",function(){
+  if(!B){ toast("ورودی صوتی در پیش‌نمایش وب نیاز به میکروفون مرورگر دارد."); return; }
+  this.classList.add("rdlistening"); toast("دستور فارسی خود را بگویید…"); call("startVoice");
+});
+/* ---------- learning UI ---------- */
+var learnActionEl=$("learnAction");
+function learnPlaceholder(){
+  if(!learnActionEl) return;
+  var a=learnActionEl.value;
+  var messages={
+    "open-app":"نام برنامه (مثلاً تلگرام)","search":"عبارت جست‌وجو (مثلاً قیمت دلار)",
+    "compose":"مخاطب|متن (مثلاً علی|سلام)","settings-wifi":"بدون جزئیات","settings-bluetooth":"بدون جزئیات",
+    "settings-storage":"بدون جزئیات","settings-apps":"بدون جزئیات"
+  };
+  $("learnDetailLabel").textContent = a==="open-app"?"نام برنامه":a==="search"?"عبارت جست‌وجو":a==="compose"?"مخاطب|متن پیام":"جزئیات (اختیاری)";
+  $("learnDetail").placeholder=messages[a]||"مثلاً تلگرام";
+}
+if(learnActionEl){ learnActionEl.addEventListener("change",learnPlaceholder); learnPlaceholder(); }
+var learnSaveBtn=$("learnSave");
+if(learnSaveBtn) learnSaveBtn.addEventListener("click",function(){
+  var phrase=$("learnPhrase").value.trim(); var action=$("learnAction").value; var detail=$("learnDetail").value.trim();
+  if(!phrase){ toast("جملهٔ خود را بنویسید."); return; }
+  if(action==="open-app" && !detail){ toast("نام برنامه را وارد کنید."); return; }
+  var label=$("learnAction").options[$("learnAction").selectedIndex].textContent;
+  LEARNED.push({phrase:phrase,action:action,detail:detail,label:label,at:Date.now()});
+  saveLearned(); renderLearned();
+  $("learnPhrase").value=""; $("learnDetail").value="";
+  toast("یاد گرفتم! دفعهٔ بعد «"+phrase+"» را انجام می‌دهم.");
+});
+var clearLearnedBtn=$("clearLearned");
+if(clearLearnedBtn) clearLearnedBtn.addEventListener("click",function(){
+  if(!LEARNED.length){ toast("چیزی برای پاک کردن نیست."); return; }
+  LEARNED=[]; saveLearned(); renderLearned(); toast("همهٔ یادگیری‌های شخصی پاک شد.");
+});
+/* ---------- floating window controls ---------- */
+function closePanel(){
+  if(FLOATING){ call("closeOverlayChat"); return; }
+  toast("این پنجره در حالت برنامه کامل است.");
+}
+function minimizePanel(){ if(FLOATING) call("minimizeOverlayChat"); else goPage("chat"); }
+if($("closeBtn")) $("closeBtn").addEventListener("click",closePanel);
+if($("minBtn")) $("minBtn").addEventListener("click",minimizePanel);
+if($("expandBtn")) $("expandBtn").addEventListener("click",function(){ if(FLOATING) call("openFullApp"); else goPage("chat"); });
+function syncKeyboard(open){
+  document.body.classList.toggle("kb-open",!!open);
+  if(B && typeof B.setPanelIme === "function") { try{ B.setPanelIme(!!open); }catch(e){} }
+  if(open){ setTimeout(function(){ var s=$("scroller"); s.scrollTop=s.scrollHeight; var el=document.getElementById("input"); if(el) el.scrollIntoView({block:"nearest"}); },60); }
+}
+var inputEl=$("input");
+if(inputEl){ inputEl.addEventListener("focus",function(){ syncKeyboard(true); }); inputEl.addEventListener("blur",function(){ syncKeyboard(false); }); }
+if(window.visualViewport){
+  var vvAdjust=function(){
+    if(!FLOATING) return;
+    var vv=window.visualViewport;
+    var hidden=Math.max(0,window.innerHeight - vv.height - vv.offsetTop);
+    document.documentElement.style.setProperty("--kb-offset",hidden+"px");
+    document.body.style.setProperty("--kb-offset",hidden+"px");
+    if(hidden>90){ document.body.classList.add("kb-open"); var s=$("scroller"); s.scrollTop=s.scrollHeight; }
+    else document.body.classList.remove("kb-open");
+  };
+  window.visualViewport.addEventListener("resize",vvAdjust);
+  window.visualViewport.addEventListener("scroll",vvAdjust);
+}
+window.focusComposer=function(){ var el=$("input"); if(el){ el.focus(); syncKeyboard(true); } };
+document.addEventListener("click",function(e){
+  var say=e.target.closest("[data-say]"); if(say){ submit(say.dataset.say); return; }
+  var forget=e.target.closest("[data-forget]");
+  if(forget){ LEARNED.splice(parseInt(forget.dataset.forget,10),1); saveLearned(); renderLearned(); toast("یادگیری حذف شد."); return; }
+  var tab=e.target.closest("[data-tab]"); if(tab){ goPage(tab.dataset.tab); return; }
+  var q=e.target.closest("[data-quick]"); if(q){
+    var v=q.dataset.quick;
+    if(v.indexOf("settings-")===0){ call("openSettings",v.slice(9)); toast("صفحهٔ تنظیمات باز شد."); }
+    else { submit(v==="temp"?"وضعیت دما و پردازنده":v==="storage"?"حافظه چقدره؟":v==="ram"?"وضعیت رم":"باتری چقدره؟"); }
+    return;
+  }
+  var open=e.target.closest("[data-open]"); if(open){ var r=parseJson(call("openApp",open.dataset.open),{ok:false,message:"باز نشد"}); toast(r.message||r.message); return; }
+  var inf=e.target.closest("[data-info]"); if(inf){ var ir=parseJson(call("appInfo",inf.dataset.info),{ok:false,message:"اطلاعات باز نشد"}); toast(ir.message||""); return; }
+  var perm=e.target.closest("[data-perm]"); if(perm){ enablePerm(perm.dataset.perm); return; }
+  var conf=e.target.closest("[data-confirm]");
+  if(conf){
+    var payload=JSON.parse(conf.dataset.confirm);
+    var msgEl=conf.closest(".msg");
+    window.__pendingConfirm=msgEl;
+    conf.disabled=true; conf.textContent="در انتظار تأیید سیستم…";
+    if(B){ B.confirmAction(conf.dataset.confirmType||"call",JSON.stringify(payload)); }
+    else { toast("این عملیات در نسخه اندروید با دیالوگ سیستم تأیید می‌شود."); }
+    return;
+  }
+  var revealBtn=e.target.closest("[data-reveal]"); if(revealBtn){ reveal(revealBtn.dataset.reveal); return; }
+  var del=e.target.closest("[data-del]");
+  if(del){
+    showModal('<h4>حذف رمز</h4><p>این رمز از گاوصندوق دستگاه حذف شود؟ این کار قابل بازگشت نیست.</p><div class="modal-actions"><button class="btn danger" data-delete="'+esc(del.dataset.del)+'">حذف رمز</button><button class="btn ghost" data-close="modal">لغو</button></div>');
+    return;
+  }
+  var dlt=e.target.closest("[data-delete]");
+  if(dlt){ var dr=parseJson(call("vaultDelete",dlt.dataset.delete),{ok:false}); toast(dr.message||"انجام شد"); closeModal(); renderVault(); return; }
+  var copy=e.target.closest("[data-copy]"); if(copy){ call("copyText",copy.dataset.copy); toast("کپی شد."); return; }
+  var close=e.target.closest("[data-close]");
+  if(close){ if(close.dataset.close==="sheet") closeSheet(); else closeModal(); return; }
+});
+$("refreshBtn").addEventListener("click",function(){ loadDevice(true); toast("گزارش دستگاه به‌روز شد."); });
+$("reloadApps").addEventListener("click",function(){ apps=[]; loadApps(); toast("فهرست برنامه‌ها به‌روز شد."); });
+$("appSearch").addEventListener("input",function(){ $("clearSearch").style.display=this.value?"block":"none"; renderApps(); });
+$("clearSearch").addEventListener("click",function(){ $("appSearch").value=""; $("clearSearch").style.display="none"; renderApps(); });
+$("unlockBtn").addEventListener("click",function(){ if(B){ B.requestVaultUnlock(); } else { toast("گاوصندوق فقط در نسخه اندروید فعال است."); } });
+$("lockBtn").addEventListener("click",function(){ call("lockVault"); vaultUnlocked=false; loadVault(); toast("گاوصندوق قفل شد."); });
+$("lockFromMenu").addEventListener("click",function(){ call("lockVault"); vaultUnlocked=false; loadVault(); closeSheet(); toast("گاوصندوق قفل شد."); });
+$("vaultSave").addEventListener("click",function(){
+  var app=$("vApp").value.trim(), user=$("vUser").value.trim(), pass=$("vPass").value;
+  if(!app||!pass){ toast("نام برنامه و رمز لازم است."); return; }
+  var r=parseJson(call("vaultAdd",app,user,pass),{ok:false,message:"ذخیره نشد."});
+  toast(r.message||"انجام شد");
+  if(r.ok){ $("vApp").value=""; $("vUser").value=""; $("vPass").value=""; renderVault(); }
+});
+$("refreshPerm").addEventListener("click",function(){ loadPerms(); toast("وضعیت مجوزها بررسی شد."); });
+$("permLink").addEventListener("click",function(){ closeSheet(); goPage("guide"); });
+document.querySelectorAll("#miuiList .check").forEach(function(b){ b.addEventListener("click",function(){ b.classList.toggle("on"); }); });
+$("menuBtn").addEventListener("click",function(){ $("menuSheet").classList.add("show"); });
+$("themeBtn").addEventListener("click",function(){ toggleTheme(); });
+$("lightSwitch").addEventListener("click",function(){ toggleTheme(); });
+function toggleTheme(){
+  var light=!document.body.classList.contains("light");
+  document.body.classList.toggle("light",light);
+  localStorage.setItem("tiva_light", light?"1":"0");
+  $("lightSwitch").classList.toggle("on",light);
+}
+var edgeSwitch=$("edgeSwitch");
+if(edgeSwitch){
+  try{ if(B && typeof B.isEdgeEnabled === "function" && B.isEdgeEnabled()) edgeSwitch.classList.add("on"); }catch(e){}
+  edgeSwitch.addEventListener("click",function(){
+    var on=!this.classList.contains("on");
+    this.classList.toggle("on",on);
+    try{ call("setEdgeGesture",on); }catch(e){}
+    toast(on?"نوار باریک لبه فعال شد؛ با دو ضربه روی آن چت باز می‌شود.":"نوار لبه خاموش شد.");
+  });
+}
+$("bubbleSwitch").addEventListener("click",function(){
+  var on=!this.classList.contains("on");
+  this.classList.toggle("on",on);
+  var r=parseJson(call("setBubble",on),{ok:on});
+  toast(on?"آیکون شناور فعال شد. اگر مجوز لازم بود، تنظیمات باز می‌شود.":"آیکون شناور بسته شد.");
+  closeSheet();
+});
+function closeSheet(){ $("menuSheet").classList.remove("show"); }
+function showModal(html){ $("modalBox").innerHTML=html; $("modal").classList.add("show"); }
+function closeModal(){ $("modal").classList.remove("show"); }
+function scrollTop(){ $("scroller").scrollTop=0; }
+document.addEventListener("visibilitychange",function(){ if(!document.hidden && document.querySelector("#page-chat.active")) loadDevice(false); });
+
+/* ---------------- Native callbacks ---------------- */
+window.onNativeReady=function(){ loadDevice(false); loadApps(); loadPerms(); renderTraining(); };
+window.onVaultState=function(ok,msg){ vaultUnlocked=!!ok; toast(msg||""); loadVault(); if(ok && B){ renderVault(parseJson(B.vaultList(),[])); } };
+window.onVaultData=function(list){ vaultUnlocked=true; renderVault(list||[]); };
+window.onVoiceResult=function(text){ $("voiceBtn").classList.remove("rdlistening"); if(text){ $("input").value=text; submit(text); } };
+window.onAutomationProgress=function(pct,stage){
+  var el=window.__automationMsg; if(!el) return;
+  var bar=el.querySelector("[data-autobar]"); var label=el.querySelector("[data-autopct]");
+  if(bar) bar.style.width=Math.max(4,Math.min(100,pct))+"%";
+  if(label) label.textContent=fa(pct)+"٪";
+  setStatus(el,stage||"در حال اجرا…",pct>=100?"ok":"");
+};
+window.onAutomationResult=function(ok,msg){
+  var el=window.__automationMsg; if(el){
+    setStatus(el,msg||(ok?"انجام شد.":"انجام نشد."),ok?"ok":"err");
+    var bar=el.querySelector("[data-autobar]"); if(bar) bar.style.width=ok?"100%":"4%";
+  }
+  toast(msg||"");
+  window.__automationMsg=null;
+};
+window.onNativeResult=function(action,ok,msg){
+  var el=window.__pendingConfirm || document.querySelectorAll(".msg")[document.querySelectorAll(".msg").length-1];
+  if(el){ setStatus(el,msg||(ok?"انجام شد.":"لغو شد."),ok?"ok":"err"); var btn=el.querySelector("[data-confirm]"); if(btn){ btn.disabled=true; btn.textContent=ok?"انجام شد":"لغو شد"; } window.__pendingConfirm=null; }
+  toast(msg||"");
+};
+window.onAndroidBack=function(){ return false; };
+
+/* ---------------- Init ---------------- */
+window.__tivaTest={parseCommand:parseCommand, execute:execute, norm:norm, findApps:findApps, apps:function(){return apps;}, setApps:function(v){apps=v;}, clock:clockFromText, duration:durationFromText, searchQuery:extractSearchQuery, contact:contactFromText};
+if(localStorage.getItem("tiva_light")==="1"){ document.body.classList.add("light"); $("lightSwitch").classList.add("on"); }
+$("appVer").textContent=fa((B&&call("version"))||"1.0.1");
+$("composer").style.display="flex";
+if(FLOATING) document.body.classList.add("floating");
+loadDevice(false);
+loadApps(); loadPerms(); renderSuggest(); renderTraining(); setPendingUI();
+setTimeout(function(){ addAssistant({intent:"خوش آمدید",confidence:.99,reply:"سلام! من تیواچت هستم. دستور فارسی خود را بنویسید یا از پیشنهادهای پایین استفاده کنید. کارهای حساس فقط با تأیید شما انجام می‌شوند.",type:"none"}); },320);
+})();
+</script>
+</body>
+</html>
