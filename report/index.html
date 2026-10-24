@@ -25,7 +25,7 @@
 </head>
 <body>
 <main>
-  <h1>تیواچت وی‌فلش — گزارش نسخهٔ ۱.۰.۲</h1>
+  <h1>تیواچت وی‌فلش — گزارش نسخهٔ ۱.۰.۳</h1>
   <p>دستیار فارسی و آفلاین اندروید. موتور قواعد + دانش محلی است و <b>مدل زبانی بزرگ نیست</b>.</p>
 
   <div class="card">
@@ -40,7 +40,7 @@
       <a class="btn ghost" href="https://github.com/havedays67-ai/TivaChat-V-Flash/releases/latest">صفحهٔ انتشارها</a>
       <a class="btn ghost" href="https://github.com/havedays67-ai/TivaChat-V-Flash/raw/main/SHA256SUMS.txt" download>SHA256SUMS.txt</a>
     </p>
-    <p class="warn">نسخهٔ ۱.۰.۲ در سطح سورس آماده و آزمون شده است؛ APK آن فقط با کیستور اصلی در GitHub Actions ساخته می‌شود.</p>
+    <p class="warn">نسخهٔ ۱.۰.۳ در سطح سورس آماده و آزمون شده است؛ APK آن فقط با کیستور اصلی در GitHub Actions ساخته می‌شود.</p>
   </div>
 
   <h2>وضعیت اصلاح‌ها</h2>
@@ -51,13 +51,17 @@
     <div class="kv"><span>گوشی کند شده</span><b class="ok">آماده</b></div>
     <div class="kv"><span>رم آزاد کن (صادقانه)</span><b class="ok">آماده</b></div>
     <div class="kv"><span>aliasهای برنامه‌ها</span><b class="ok">۲۷۳ alias</b></div>
-    <div class="kv"><span>دیتاست متوازن</span><b class="ok">۱۷٬۱۶۶ / ۳۴ کلاس</b></div>
+    <div class="kv"><span>دیتاست تمیزشده</span><b class="ok">۱۷٬۴۵۵ / ۳۵ کلاس</b></div>
+    <div class="kv"><span>آلارم مستقیم</span><b class="ok">EXTRA_SKIP_UI</b></div>
+    <div class="kv"><span>× روی آیکون شناور</span><b class="ok">آماده</b></div>
+    <div class="kv"><span>نوشتن در مرورگر</span><b class="ok">openThenWrite</b></div>
     <div class="kv"><span>APK امضاشده ۱.۰.۲</span><b class="bad">نیازمند کیستور</b></div>
   </div>
 
   <h2>تست‌ها</h2>
   <pre>node tests/engine.test.mjs     -> ALL TESTS PASSED
 node tests/v102.test.mjs       -> ALL v1.0.2 TESTS PASSED
+node tests/v103.test.mjs       -> ALL v1.0.3 TESTS PASSED
 python3 tests/native_checks.py -> ALL NATIVE CHECKS PASSED</pre>
 
   <h2>نکتهٔ امنیتی</h2>

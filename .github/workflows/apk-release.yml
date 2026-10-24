@@ -14,7 +14,7 @@ on:
       version:
         description: "versionName (مثال: 1.0.2)"
         required: true
-        default: "1.0.2"
+        default: "1.0.3"
       publish:
         description: "انتشار در گیت‌هاب و به‌روزرسانی لینک دانلود"
         type: boolean
@@ -52,7 +52,7 @@ jobs:
     needs: tests
     runs-on: ubuntu-latest
     env:
-      VERSION: ${{ github.event.inputs.version || '1.0.2' }}
+      VERSION: ${{ github.event.inputs.version || '1.0.3' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -119,7 +119,7 @@ jobs:
         with:
           tag_name: v${{ env.VERSION }}
           name: TivaChat V Flash v${{ env.VERSION }}
-          body_path: docs/REPORT-v1.0.2.md
+          body_path: docs/REPORT-v1.0.3.md
           files: |
             TivaChat-V-Flash-v${{ env.VERSION }}.apk
             SHA256SUMS.txt

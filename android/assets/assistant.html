@@ -643,6 +643,10 @@ function parseCompose(raw,t){
   if(cm){
     var words=cm[1].replace(/[\u060C,.!?؟]/g," ").split(/\s+/).filter(function(w){ return w && !BAD_CONTACT[w] && norm(w)!==norm(app.label); });
     contact=words.slice(0,2).join(" ").trim();
+    /* v1.0.3: a latin phrase, a browser name or the app itself is never a contact */
+    if(/^[A-Za-z0-9._\- ]+$/.test(contact)) contact="";
+    if(BROWSER_WORDS.test(contact) || MESSENGER_WORDS.test(contact) && contact.length<4) contact="";
+    if(/google|studio|search|http|www/i.test(contact)) contact="";
   }
   var message=after
     .replace(/^[\s:،,]+/,"")
@@ -990,10 +994,50 @@ function v102Override(raw,t){
   }
   return null;
 }
+/* ---------- v1.0.3: browser typing, direct alarm, smarter message routing ---------- */
+var BROWSER_WORDS=/(کروم|chrome|مرورگر|فایرفاکس|firefox|اپرا|opera|mi browser|duckassist|براوزر|browser|گوگل|google)/;
+var MESSENGER_WORDS=/(تلگرام|telegram|بله|bale|بلو|blu|روبیکا|rubika|بلد|balad|شاد|shad|واتس|whatsapp|ایتا|eitaa|سروش|soroush|آی ?گپ|igap|پیامک|sms|پیام)/;
+function v103Override(raw,t){
+  if(!t) return null;
+  var writeRe=/(بنویس|تایپ کن|تایپ|وارد کن|تاip کن|type)/;
+  var wm=t.match(writeRe);
+  var openRe=/(باز|بازکن|برو|بیار|اجرا|وارد|شروع|روشن)/;
+  if(wm){
+    var head=t.slice(0,wm.index);
+    var tail=raw.slice(Math.max(0,raw.indexOf(raw.match(writeRe)[0]))+raw.match(writeRe)[0].length);
+    tail=tail.replace(/^[\s:،,«»"']+/,"").replace(/\s*(و\s*)?(بفرست|ارسال کن|بفرستش).*$/,"").replace(/[«»]/g,"").trim();
+    if(!tail){
+      /* «بنویس» without text: ask instead of touching contacts */
+      return clarify(["کروم رو باز کن و بنویس google ai studio","تلگرام رو باز کن و به علی بنویس سلام"],"متن یا مقصد نوشتن مشخص نشد. مثلاً بگویید: «کروم رو باز کن و بنویس google ai studio» یا «تلگرام رو باز کن و به علی بنویس سلام».");
+    }
+    var wantsMessage=/(پیام|پیامک|مسیج|chat|چت)/.test(t) && /(به|برای)\s+/.test(t) && MESSENGER_WORDS.test(t);
+    if(wantsMessage) return null; /* real messaging goes through composeMessage */
+    if(MESSENGER_WORDS.test(head) && /(به|برای)\s+/.test(head)) return null;
+    var app=null;
+    try{ var f=findApps(head||t); if(f && f.length) app=f[0].app; }catch(e){}
+    var latinText=/[A-Za-z]{2,}/.test(tail);
+    if(app){
+      if(BROWSER_WORDS.test(app.label+" "+app.pkg) || BROWSER_WORDS.test(head) || !MESSENGER_WORDS.test(app.label)){
+        return {intent:"باز کردن برنامه و نوشتن متن",confidence:.96,reply:"«"+app.label+"» را باز می‌کنم و متن «"+tail+"» را در کادر نوشتن می‌گذارم؛ جست‌وجو یا ارسال با خودتان است.",type:"openThenWrite",app:app,payload:tail,fallbackSearch:true};
+      }
+    }
+    if(!openRe.test(t) && latinText) return {intent:"جست‌وجوی متن",confidence:.93,reply:"برنامهٔ مشخصی برای نوشتن پیدا نشد؛ متن «"+tail+"» را در مرورگر جست‌وجو می‌کنم.",type:"search",payload:tail};
+    return {intent:"نوشتن متن در برنامه",confidence:.92,reply:"برنامهٔ مقصد را پیدا نکردم؛ متن «"+tail+"» را در مرورگر جست‌وجو می‌کنم.",type:"search",payload:tail};
+  }
+  /* «کروم رو باز کن و google ai studio رو سرچ کن» had no such bug, but keep it deterministic */
+  var searchRe=/(سرچ کن|جستجو کن|جست‌وجو کن|search)/;
+  var sm=t.match(searchRe);
+  if(sm){
+    var q=raw.slice(raw.indexOf(raw.match(searchRe)[0])+raw.match(searchRe)[0].length).replace(/^[\s:،,]+/,"").replace(/[«»]/g,"").trim();
+    if(q) return {intent:"جست‌وجوی وب",confidence:.95,reply:"«"+q+"» را جست‌وجو می‌کنم.",type:"search",payload:q};
+  }
+  return null;
+}
 function parseCommandCore(raw){
   var t=norm(raw);
   LOW_CONF_MATCH=null;
   var learned=matchLearned(t); if(learned) return learned;
+  var v103=v103Override(raw,t); if(v103) return v103;
   var v102=v102Override(raw,t); if(v102) return v102;
   var pending=tryPendingTarget(raw); if(pending) return pending;
   var compose=parseCompose(raw,t); if(compose) return compose;
@@ -1200,8 +1244,33 @@ function execute(el,res){
       case "tab": goPage(res.payload); setStatus(el,"بخش موردنظر باز شد.","ok"); break;
       case "alarm":
         var at=res.payload||{hour:7,minute:0};
-        var a=parseJson(call("setAlarm",at.hour,at.minute,"تیواچت"),{ok:false,message:"تنظیم آلارم ممکن نشد."});
-        resultToStatus(el,a); break;
+        var a=null;
+        try{
+          if(typeof TivaNative!=="undefined" && TivaNative && typeof TivaNative.setAlarmDirect==="function"){
+            a=parseJson(call("setAlarmDirect",at.hour,at.minute,"تیواچت"),null);
+          }
+        }catch(e){ a=null; }
+        if(!a || !a.ok){
+          a=parseJson(call("setAlarm",at.hour,at.minute,"تیواچت"),{ok:false,message:"تنظیم آلارم ممکن نشد."});
+        }
+        resultToStatus(el,a);
+        if(a && a.ok){ setStatus(el,"آلارم ساعت "+fa(at.hour)+":"+(at.minute<10?"0":"")+fa(at.minute)+" ثبت شد؛ اگر ساعت گوشی اجازه دهد بدون باز شدن صفحه اضافه می‌شود.","ok"); }
+        break;
+      case "openThenWrite":
+        var ow=parseJson(call("openApp",res.app.pkg),{ok:false,message:"برنامه باز نشد."});
+        if(!ow.ok){ resultToStatus(el,ow); break; }
+        var typed={"ok":false};
+        try{ typed=parseJson(call("typeIntoApp",res.payload),{"ok":false}); }catch(e){ typed={"ok":false}; }
+        if(typed && typed.ok){
+          setStatus(el,"«"+res.app.label+"» باز شد و متن «"+res.payload+"» در کادر نوشته شد. جست‌وجو یا ارسال را خودتان تأیید کنید.","ok");
+        } else if(res.fallbackSearch){
+          var sf=parseJson(call("searchWeb",res.payload),{ok:false,message:"مرورگر باز نشد."});
+          if(sf.ok) setStatus(el,"برنامه باز شد اما کادر نوشتن در دسترس نبود (سرویس دسترس‌پذیری)؛ متن «"+res.payload+"» در مرورگر جست‌وجو شد.","ok");
+          else resultToStatus(el,sf);
+        } else {
+          setStatus(el,"برنامه باز شد اما کادر نوشتن پیدا نشد؛ سرویس دسترس‌پذیری را از تنظیمات فعال کنید.","err");
+        }
+        break;
       case "timer":
         var tm=parseJson(call("setTimer",res.payload,"تیواچت"),{ok:false,message:"تنظیم تایمر ممکن نشد."});
         resultToStatus(el,tm); break;
@@ -1426,9 +1495,9 @@ window.onNativeResult=function(action,ok,msg){
 window.onAndroidBack=function(){ return false; };
 
 /* ---------------- Init ---------------- */
-window.__tivaTest={parseCommand:parseCommand, parseRaw:parseCommandCore, execute:execute, norm:norm, findApps:findApps, apps:function(){return apps;}, setApps:function(v){apps=v;}, clock:clockFromText, duration:durationFromText, searchQuery:extractSearchQuery, contact:contactFromText};
+window.__tivaTest={parseCommand:parseCommand, parseRaw:parseCommandCore, v103:function(raw){return v103Override(raw,norm(raw));}, execute:execute, norm:norm, findApps:findApps, apps:function(){return apps;}, setApps:function(v){apps=v;}, clock:clockFromText, duration:durationFromText, searchQuery:extractSearchQuery, contact:contactFromText};
 if(localStorage.getItem("tiva_light")==="1"){ document.body.classList.add("light"); $("lightSwitch").classList.add("on"); }
-$("appVer").textContent=fa((B&&call("version"))||"1.0.2");
+$("appVer").textContent=fa((B&&call("version"))||"1.0.3");
 $("composer").style.display="flex";
 if(FLOATING) document.body.classList.add("floating");
 loadDevice(false);

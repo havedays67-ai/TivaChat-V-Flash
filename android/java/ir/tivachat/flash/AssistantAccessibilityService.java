@@ -58,6 +58,42 @@ public class AssistantAccessibilityService extends AccessibilityService {
     }
     public static void setAutomationListener(AutomationListener newListener) { listener = newListener; }
 
+    /** v1.0.3: write text into the focused editable field; never presses send/search. */
+    public static boolean typeText(String text) {
+        if (instance == null || text == null || text.trim().isEmpty()) return false;
+        AccessibilityNodeInfo root;
+        try { root = instance.getRootInActiveWindow(); } catch (Exception e) { return false; }
+        if (root == null) return false;
+        AccessibilityNodeInfo target = findEditable(root);
+        if (target == null) return false;
+        try {
+            Bundle args = new Bundle();
+            args.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, text);
+            if (target.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, args)) return true;
+            target.performAction(AccessibilityNodeInfo.ACTION_FOCUS);
+            return target.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, args);
+        } catch (Exception e) {
+            return false;
+        } finally {
+            try { target.recycle(); } catch (Exception ignored) { }
+        }
+    }
+
+    private static AccessibilityNodeInfo findEditable(AccessibilityNodeInfo node) {
+        if (node == null) return null;
+        try {
+            if (node.isEditable() && node.isEnabled()) return node;
+            for (int i = 0; i < node.getChildCount(); i++) {
+                AccessibilityNodeInfo child = node.getChild(i);
+                if (child == null) continue;
+                AccessibilityNodeInfo found = findEditable(child);
+                if (found != null) return found;
+                child.recycle();
+            }
+        } catch (Exception ignored) { }
+        return null;
+    }
+
     public static boolean perform(String action) {
         if (instance == null) return false;
         switch (action) {

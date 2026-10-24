@@ -195,7 +195,34 @@ public class OverlayService extends Service {
             glyph.setGravity(Gravity.CENTER);
             wrap.addView(glyph, new FrameLayout.LayoutParams(
                     FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
-            wrap.setContentDescription("تیواچت؛ دستیار فارسی");
+
+            /* v1.0.3: a small × badge on the bubble corner removes the floating icon. */
+            TextView closeBtn = new TextView(this);
+            closeBtn.setText("×");
+            closeBtn.setTextSize(14);
+            closeBtn.setTextColor(Color.WHITE);
+            closeBtn.setGravity(Gravity.CENTER);
+            closeBtn.setContentDescription("برداشتن آیکون شناور تیواچت");
+            GradientDrawable closeBg = new GradientDrawable();
+            closeBg.setShape(GradientDrawable.OVAL);
+            closeBg.setColor(Color.parseColor("#E11D48"));
+            closeBg.setStroke(dp(1), Color.parseColor("#CCFFFFFF"));
+            closeBtn.setBackground(closeBg);
+            int badge = dp(19);
+            FrameLayout.LayoutParams closeLp = new FrameLayout.LayoutParams(badge, badge);
+            closeLp.gravity = Gravity.TOP | Gravity.END;
+            closeLp.setMargins(0, -dp(1), -dp(1), 0);
+            wrap.addView(closeBtn, closeLp);
+            closeBtn.setOnClickListener(v -> {
+                try {
+                    prefs().edit().putBoolean("bubble_enabled", false).putBoolean("bubble_disabled", true).apply();
+                } catch (Exception ignored) { }
+                try {
+                    Toast.makeText(this, "آیکون شناور برداشته شد. برای بازگردانی از اعلان تیواچت یا کاشی تنظیمات سریع استفاده کنید.", Toast.LENGTH_LONG).show();
+                } catch (Exception ignored) { }
+                stopEverything();
+            });
+            wrap.setContentDescription("تیواچت؛ دستیار فارسی. برای برداشتن آیکون، × گوشهٔ آن را بزنید.");
 
             int type = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
                     ? WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY

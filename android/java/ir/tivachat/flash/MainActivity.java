@@ -586,6 +586,39 @@ public class MainActivity extends Activity {
             return safeStart(intent, "آلارم در ساعت مشخص‌شده تنظیم شد.");
         }
 
+        @JavascriptInterface public String setAlarmDirect(int hour, int minute, String label) {
+            JSONObject out = new JSONObject();
+            try {
+                Intent intent = new Intent(AlarmClock.ACTION_SET_ALARM)
+                        .putExtra(AlarmClock.EXTRA_HOUR, Math.max(0, Math.min(23, hour)))
+                        .putExtra(AlarmClock.EXTRA_MINUTES, Math.max(0, Math.min(59, minute)))
+                        .putExtra(AlarmClock.EXTRA_MESSAGE, label == null ? "تیواچت" : label)
+                        .putExtra(AlarmClock.EXTRA_SKIP_UI, true);
+                startActivity(intent);
+                out.put("ok", true);
+                out.put("message", "آلارم بدون پرسش و بدون باز شدن صفحه ثبت شد.");
+            } catch (Exception e) {
+                try { out.put("ok", false); out.put("message", "ثبت مستقیم آلارم ممکن نشد؛ صفحهٔ آلارم با همان ساعت باز می‌شود."); }
+                catch (Exception ignored) { }
+            }
+            return out.toString();
+        }
+
+        /** Writes text into the focused field of the app the user asked to open. Never submits. */
+        @JavascriptInterface public String typeIntoApp(String text) {
+            JSONObject out = new JSONObject();
+            try {
+                boolean ok = AssistantAccessibilityService.typeText(text);
+                out.put("ok", ok);
+                out.put("message", ok
+                        ? "متن در کادر نوشته شد؛ ارسال یا جست‌وجو فقط با تأیید شماست."
+                        : "کادر نوشتن پیدا نشد یا سرویس دسترس‌پذیری فعال نیست.");
+            } catch (Exception e) {
+                try { out.put("ok", false); out.put("message", "نوشتن متن ممکن نشد."); } catch (Exception ignored) { }
+            }
+            return out.toString();
+        }
+
         @JavascriptInterface public String setTimer(int seconds, String label) {
             Intent intent = new Intent(AlarmClock.ACTION_SET_TIMER)
                     .putExtra(AlarmClock.EXTRA_LENGTH, Math.max(1, seconds))

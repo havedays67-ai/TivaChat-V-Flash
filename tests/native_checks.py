@@ -21,7 +21,7 @@ for name,(file,needle) in checks.items():
     print(('PASS' if ok else 'FAIL'),name,needle)
     fail += 0 if ok else 1
 manifest=(pathlib.Path('android')/'AndroidManifest.xml').read_text()
-for required in ['versionCode="5"','versionName="1.0.2"','targetSdkVersion="34"','minSdkVersion="28"']:
+for required in ['versionCode="6"','versionName="1.0.3"','targetSdkVersion="34"','minSdkVersion="28"']:
     ok=required in manifest
     print(('PASS' if ok else 'FAIL'),'manifest',required)
     fail += 0 if ok else 1
@@ -36,6 +36,12 @@ extra.append(('aliases_file', pathlib.Path('android/assets/tiva_app_aliases.js')
 extra.append(('aliases_loaded', 'tiva_app_aliases.js' in assistant, ''))
 extra.append(('confidence_gate', 'V102_GATED_TYPES' in assistant, ''))
 extra.append(('noon_window', 'isNoon' in assistant, ''))
+extra.append(('v103_typing', 'typeIntoApp' in main_java and 'openThenWrite' in assistant, ''))
+extra.append(('direct_alarm', 'setAlarmDirect' in main_java and 'EXTRA_SKIP_UI' in main_java, ''))
+extra.append(('set_alarm_permission', 'com.android.alarm.permission.SET_ALARM' in manifest, ''))
+overlay=(root.parent/'OverlayService.java').read_text() if (root.parent/'OverlayService.java').exists() else pathlib.Path('android/java/ir/tivachat/flash/OverlayService.java').read_text()
+extra.append(('bubble_close_badge', 'setText("×")' in overlay and 'stopEverything()' in overlay, ''))
+extra.append(('accessibility_typing', 'typeText' in (root/'AssistantAccessibilityService.java').read_text(), ''))
 for name, ok, detail in extra:
     print(('PASS' if ok else 'FAIL'), name, detail)
     fail += 0 if ok else 1
