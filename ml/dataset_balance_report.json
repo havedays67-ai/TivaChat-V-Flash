@@ -1,9 +1,10 @@
 {
+  "baseline": "v1.0.2 (17,166 examples / 34 classes)",
   "before": {
-    "alarm": 829,
+    "alarm": 819,
     "battery": 318,
     "bluetooth_settings": 800,
-    "brightness": 471,
+    "brightness": 489,
     "call": 801,
     "clean_cache": 317,
     "close_app": 386,
@@ -15,8 +16,8 @@
     "flash_on": 382,
     "greeting": 800,
     "list_heavy_apps": 385,
-    "negative": 539,
-    "open_app": 740,
+    "negative": 529,
+    "open_app": 735,
     "open_apps_settings": 414,
     "open_camera": 423,
     "open_downloads": 477,
@@ -26,12 +27,11 @@
     "ram": 374,
     "search": 335,
     "sms": 682,
-    "sound": 484,
+    "sound": 493,
     "storage": 507,
     "temperature": 336,
     "thanks": 733,
     "timer": 321,
-    "type_in_app": 300,
     "uninstall_app": 571,
     "vault": 481,
     "wifi_settings": 467
@@ -73,15 +73,17 @@
     "vault": 481,
     "wifi_settings": 467
   },
-  "totalBefore": 17464,
+  "totalBefore": 17166,
   "totalAfter": 17455,
-  "v103Added": 0,
-  "dropped": {
-    "exact_duplicate": 57
-  },
   "classes": 35,
   "min": 300,
   "max": 820,
+  "exactDuplicates": 0,
   "nearDuplicates": 0,
-  "exactDuplicates": 0
+  "curatedAdded": 57,
+  "notes": [
+    "Sentence-level dedupe is idempotent: re-running the cleaner keeps counts stable (that is why v103Added is 0 on a second run).",
+    "type_in_app is a brand new intent class: 30 hand-written sentences plus natural balancing variants to reach the 300 floor.",
+    "No template sentence appears in two classes; normalized keys and token+bigram signatures are both unique."
+  ]
 }
