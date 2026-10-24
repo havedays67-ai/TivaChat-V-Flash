@@ -1,0 +1,13 @@
+{
+  "name": "tivachat-v-flash",
+  "private": true,
+  "type": "module",
+  "version": "1.0.2",
+  "scripts": {
+    "test": "node tests/engine.test.mjs && node tests/v102.test.mjs && python3 tests/native_checks.py",
+    "test:v102": "node tests/v102.test.mjs"
+  },
+  "devDependencies": {
+    "jsdom": "^24.1.3"
+  }
+}

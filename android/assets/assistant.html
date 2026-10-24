@@ -419,6 +419,7 @@ body.floating main{scroll-padding-bottom:90px}
 <div class="toast" id="toast"></div>
 
 <script src="tiva_knowledge.js"></script>
+<script src="tiva_app_aliases.js"></script>
 <script>
 (function(){
 "use strict";
@@ -611,6 +612,7 @@ var ALIASES = {
   "پلی استور":"play store","تلگرام ایکس":"telegram","چت جی پی تی":"chatgpt","جمینای":"gemini","کلود":"claude"
 };
 if(KB.aliases){ Object.keys(KB.aliases).forEach(function(key){ var v=KB.aliases[key]; ALIASES[key]=Array.isArray(v)?v[0]:v; }); }
+if(window.TIVA_APP_ALIASES){ Object.keys(window.TIVA_APP_ALIASES).forEach(function(key){ var hint=window.TIVA_APP_ALIASES[key]; if(hint) ALIASES[key]=hint; }); }
 var OPEN_WORDS = /(باز|بازکن|برو|بیار|اجرا|شروع|وارد|ببینم|میخوام|می خوام|می خواهم|لطفا|کن|روشن)/;
 var BAD_CONTACT = { "پیام":1,"پیامهای":1,"پیام‌های":1,"پیامها":1,"شخصی":1,"در":1,"چت":1,"برنامه":1,"رو":1,"را":1,"بنویس":1,"بفرست":1,"برای":1,"به":1,"تلگرام":1,"واتساپ":1,"واتس":1,"اینستاگرام":1,"گروه":1,"کانال":1,"خودم":1,"من":1,"saved":1,"پیامرسان":1 };
 
@@ -750,7 +752,10 @@ function clockFromText(raw){
   if(hour===null) return null;
   var period=norm(raw);
   var isNight=/(^|\s)(شب|عصر|بعد از ظهر|بعدازظهر)(\s|$)/.test(period);
+  var isNoon=/(^|\s)(ظهر|بعدازظهر|بعد از ظهر)(\s|$)/.test(period);
   if(isNight && hour<12) hour+=12;
+  if(isNoon && hour<12) hour+=12;
+  if(isNoon && hour===0) hour=12;
   if(hour===12 && /(^|\s)صبح(\s|$)/.test(period)) hour=0;
   if(hour<0 || hour>23 || minute<0 || minute>59) return null;
   return {hour:hour,minute:minute};
@@ -961,11 +966,35 @@ function matchKnowledge(t){
     if(!best || score>best.score) best={intent:ex.intent,score:score,text:ex.text};
   });
   if(!best) return null;
+  if(best.score<0.9){ LOW_CONF_MATCH=best; return null; }
   return kbResult(best.intent);
 }
-function parseCommand(raw){
+/* ---------- v1.0.2: deterministic intent fixes & safety gates ---------- */
+var LOW_CONF_MATCH=null;
+function v102Override(raw,t){
+  if(!t) return null;
+  var deleteWords=/(حذف|پاک|بردار|پاک‌سازی)/;
+  var cameraAsk=/(عکس|سلفی|تصویر).*(بگیر|بنداز|بگیرم|گرفتن|بندازم)|(دوربین).*(عکس|بگیر)|(باز|روشن|باز کن).*(دوربین)/;
+  if(cameraAsk.test(t) && !deleteWords.test(t) && !/(گالری|آلبوم|نمایش|دیدن|پیام)/.test(t)){
+    return {intent:"گرفتن عکس با دوربین",confidence:.96,reply:"برنامهٔ دوربین را باز می‌کنم. دکمهٔ عکاسی را خودتان بزنید؛ تیواچت عکس را ذخیره، حذف یا ارسال نمی‌کند.",type:"camera"};
+  }
+  var slowAsk=/(گوشی|موبایل|سیستم|اندروید|دستگاه).*(کند|کندی|لگ|داغ|هنگ)|کند شده|کندی سیستم|لگ می‌زند|لگ میزنه|کند و کور/;
+  if(slowAsk.test(t) && !deleteWords.test(t)){
+    var d=deviceInfoSafe();
+    return {intent:"بررسی کندی گوشی",confidence:.94,reply:"بدون اجرای هیچ عملیات مخربی، وضعیت رم، حافظه و دما را می‌خوانم. اندروید اجازهٔ بستن اجباری برنامه‌های دیگر را نمی‌دهد؛ اگر مصرف بالا بود صفحهٔ مدیریت برنامه‌ها را باز می‌کنم تا خودتان برنامهٔ پرمصرف را ببندید.",type:"slowDevice",details:[["رم در دسترس",fa(d.ramAvail)+" مگابایت"],["رم مصرف‌شده",fa(d.ramUsed)+" مگابایت"],["فضای آزاد",fa(d.storageFree)+" گیگابایت"],["دمای باتری",fa(d.batteryTemp)+" درجه"],["وضعیت",d.lowRam?"کم‌بودن حافظه":"عادی"]],payload:"apps",safety:"فقط گزارش و هدایت رسمی"};
+  }
+  var freeRam=/(رم|حافظه موقت|حافظهٔ موقت|رمم).*(ازاد|آزاد|خالی|پاک|بهتر|سبک)|ازادسازی رم|آزادسازی رم|رم رو ازاد|رم رو آزاد/;
+  if(freeRam.test(t) && !deleteWords.test(t)){
+    var d2=deviceInfoSafe();
+    return {intent:"آزادسازی رم (هدایت رسمی)",confidence:.95,reply:"اندروید اجازه نمی‌دهد برنامه‌ای رم دستگاه یا رم برنامه‌های دیگر را پاک کند؛ تیواچت هم این کار را ادعا نمی‌کند. وضعیت واقعی را می‌خوانم و صفحهٔ مدیریت برنامه‌ها را باز می‌کنم؛ با Force stop همان برنامه، رم آزاد می‌شود.",type:"slowDevice",details:[["رم کل",fa(d2.ramTotal)+" مگابایت"],["در دسترس",fa(d2.ramAvail)+" مگابایت"],["مصرف‌شده",fa(d2.ramUsed)+" مگابایت"],["وضعیت",d2.lowRam?"کم‌بودن حافظه":"عادی"]],payload:"apps",safety:"هدایت به مسیر رسمی"};
+  }
+  return null;
+}
+function parseCommandCore(raw){
   var t=norm(raw);
+  LOW_CONF_MATCH=null;
   var learned=matchLearned(t); if(learned) return learned;
+  var v102=v102Override(raw,t); if(v102) return v102;
   var pending=tryPendingTarget(raw); if(pending) return pending;
   var compose=parseCompose(raw,t); if(compose) return compose;
   if(!t) return clarify(["باتری چقدره؟","رم رو آزاد کن","تلگرام رو باز کن"]);
@@ -1073,7 +1102,21 @@ function parseCommand(raw){
   // Knowledge base is consulted before the safe fallback (not only after regexes).
   var kbMatch=matchKnowledge(t);
   if(kbMatch) return kbMatch;
+  if(LOW_CONF_MATCH){
+    var lc=LOW_CONF_MATCH; LOW_CONF_MATCH=null;
+    var pct=Math.round(lc.score*100);
+    return clarify(["منظورتان «"+lc.text+"» بود؟","باتری گوشی چقدره؟","تلگرام رو باز کن"],"اطمینان کافی برای اجرای این دستور ندارم (حدود "+pct+"٪ و کمتر از آستانهٔ ۹۰٪). هیچ عملیاتی انجام نشد؛ منظورتان کدام است؟",lc.score);
+  }
   return clarify(["باتری گوشی چقدره؟","وضعیت رم و دما","تلگرام رو باز کن","چراغ‌قوه رو روشن کن","گزارش کامل دستگاه"], "این دستور در فهرست دستورات پشتیبانی‌شده نیست. برای جلوگیری از اجرای اشتباه، هیچ عملیاتی انجام نمی‌دهم.");
+}
+
+var V102_GATED_TYPES={openApp:1,camera:1,flashlight:1,alarm:1,timer:1,search:1,callContact:1,compose:1,settings:1,tab:1,mediaPicker:1};
+function parseCommand(raw){
+  var core=parseCommandCore(raw);
+  if(core && V102_GATED_TYPES[core.type] && !core.safety && typeof core.confidence==="number" && core.confidence<0.9){
+    return clarify(["باتری گوشی چقدره؟","رم و حافظه را گزارش کن","تلگرام رو باز کن","چراغ‌قوه رو روشن کن"],"اطمینان کافی برای اجرای این دستور ندارم ("+Math.round(core.confidence*100)+"٪ و کمتر از آستانهٔ ۹۰٪). هیچ عملیاتی انجام نشد؛ منظورتان کدام است؟",core.confidence);
+  }
+  return core;
 }
 
 /* ---------------- Chat rendering ---------------- */
@@ -1144,6 +1187,16 @@ function execute(el,res){
       case "filePicker":
         var fp=parseJson(call("openFilePicker"),{ok:false,message:"صفحهٔ فایل‌ها باز نشد."});
         resultToStatus(el,fp); break;
+      case "camera":
+        var cam=parseJson(call("openCamera"),{ok:false,message:"برنامهٔ دوربین باز نشد."});
+        resultToStatus(el,cam); break;
+      case "slowDevice":
+        loadDevice(true);
+        if(res.payload==="apps"){
+          try{ call("openSettings","apps"); }catch(e){}
+          setStatus(el,"گزارش سیستم خوانده شد؛ صفحهٔ مدیریت برنامه‌ها باز شد. بستن نهایی برنامه با تأیید خودتان است.","ok");
+        } else { setStatus(el,"گزارش سیستم خوانده شد.","ok"); }
+        break;
       case "tab": goPage(res.payload); setStatus(el,"بخش موردنظر باز شد.","ok"); break;
       case "alarm":
         var at=res.payload||{hour:7,minute:0};
@@ -1373,9 +1426,9 @@ window.onNativeResult=function(action,ok,msg){
 window.onAndroidBack=function(){ return false; };
 
 /* ---------------- Init ---------------- */
-window.__tivaTest={parseCommand:parseCommand, execute:execute, norm:norm, findApps:findApps, apps:function(){return apps;}, setApps:function(v){apps=v;}, clock:clockFromText, duration:durationFromText, searchQuery:extractSearchQuery, contact:contactFromText};
+window.__tivaTest={parseCommand:parseCommand, parseRaw:parseCommandCore, execute:execute, norm:norm, findApps:findApps, apps:function(){return apps;}, setApps:function(v){apps=v;}, clock:clockFromText, duration:durationFromText, searchQuery:extractSearchQuery, contact:contactFromText};
 if(localStorage.getItem("tiva_light")==="1"){ document.body.classList.add("light"); $("lightSwitch").classList.add("on"); }
-$("appVer").textContent=fa((B&&call("version"))||"1.0.1");
+$("appVer").textContent=fa((B&&call("version"))||"1.0.2");
 $("composer").style.display="flex";
 if(FLOATING) document.body.classList.add("floating");
 loadDevice(false);

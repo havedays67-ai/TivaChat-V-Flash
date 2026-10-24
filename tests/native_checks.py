@@ -1,3 +1,4 @@
+import os
 import pathlib,re,sys
 root=pathlib.Path('android/java/ir/tivachat/flash')
 checks={
@@ -20,9 +21,23 @@ for name,(file,needle) in checks.items():
     print(('PASS' if ok else 'FAIL'),name,needle)
     fail += 0 if ok else 1
 manifest=(pathlib.Path('android')/'AndroidManifest.xml').read_text()
-for required in ['versionCode="4"','versionName="1.0.1"','targetSdkVersion="34"','minSdkVersion="28"']:
+for required in ['versionCode="5"','versionName="1.0.2"','targetSdkVersion="34"','minSdkVersion="28"']:
     ok=required in manifest
     print(('PASS' if ok else 'FAIL'),'manifest',required)
+    fail += 0 if ok else 1
+main_java=(root/'MainActivity.java').read_text()
+assistant=(pathlib.Path('android/assets/assistant.html')).read_text()
+extra=[]
+extra.append(('open_camera_bridge', 'openCamera' in main_java, ''))
+extra.append(('system_delete_dialog', 'MediaStore.createDeleteRequest' in main_java, ''))
+extra.append(('uninstall_system_dialog', 'Intent.ACTION_DELETE' in main_java, ''))
+extra.append(('no_silent_delete', 'createDeleteRequest' in main_java and 'contentResolver.delete(' not in main_java, ''))
+extra.append(('aliases_file', pathlib.Path('android/assets/tiva_app_aliases.js').exists(), ''))
+extra.append(('aliases_loaded', 'tiva_app_aliases.js' in assistant, ''))
+extra.append(('confidence_gate', 'V102_GATED_TYPES' in assistant, ''))
+extra.append(('noon_window', 'isNoon' in assistant, ''))
+for name, ok, detail in extra:
+    print(('PASS' if ok else 'FAIL'), name, detail)
     fail += 0 if ok else 1
 print('RESULT:', (str(fail)+' FAILED') if fail else 'ALL NATIVE CHECKS PASSED')
 sys.exit(1 if fail else 0)

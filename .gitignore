@@ -1,0 +1,7 @@
+node_modules/
+build/
+dist/
+release.keystore
+*.jks
+*.keystore
+.DS_Store

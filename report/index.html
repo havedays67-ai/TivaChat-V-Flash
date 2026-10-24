@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>تیواچت وی‌فلش — گزارش نسخه ۱.۰.۲</title>
+<style>
+  :root { color-scheme: dark; }
+  body{margin:0;font-family:Vazirmatn,system-ui,Tahoma,sans-serif;background:#05070f;color:#e2e8f0;line-height:1.9}
+  main{max-width:900px;margin:0 auto;padding:32px 18px 64px}
+  h1{font-size:23px;margin:0 0 6px}
+  h2{font-size:16px;margin:28px 0 8px;color:#6ee7b7}
+  p,li{font-size:13px;color:#b7c2d4}
+  .card{border:1px solid #1e293b;border-radius:16px;padding:16px;background:#0a1020;margin:14px 0}
+  .btn{display:inline-flex;gap:8px;align-items:center;border-radius:12px;padding:11px 16px;background:linear-gradient(135deg,#10b981,#0ea5e9);color:#04121a;font-weight:700;text-decoration:none;font-size:13px}
+  .btn.ghost{background:#111a2e;color:#cbd5e1;border:1px solid #24324d}
+  code,pre{direction:ltr;unicode-bidi:embed;font-family:ui-monospace,Menlo,monospace;font-size:11px}
+  pre{background:#02040a;border:1px solid #182338;border-radius:12px;padding:12px;overflow:auto}
+  .ok{color:#34d399}.bad{color:#fb7185}.warn{color:#fcd34d}
+  .grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+  .kv{border:1px solid #1b2740;border-radius:12px;padding:10px;background:#070c18}
+  .kv b{display:block;font-size:15px}
+  .kv span{font-size:11px;color:#8b9ab3}
+</style>
+</head>
+<body>
+<main>
+  <h1>تیواچت وی‌فلش — گزارش نسخهٔ ۱.۰.۲</h1>
+  <p>دستیار فارسی و آفلاین اندروید. موتور قواعد + دانش محلی است و <b>مدل زبانی بزرگ نیست</b>.</p>
+
+  <div class="card">
+    <h2 style="margin-top:0">دریافت آخرین APK</h2>
+    <p>
+      نسخهٔ پایدار فعلی: <b data-latest-version>1.0.1</b> ·
+      حجم: <b data-latest-size>361690</b> بایت ·
+      SHA-256: <code data-latest-sha256>ff2292a0c76fd50901d13da631e6a88c6d939c46e6aacac59f30b829181ef419</code>
+    </p>
+    <p>
+      <a class="btn" href="https://github.com/havedays67-ai/TivaChat-V-Flash/releases/download/v1.0.1/TivaChat-V-Flash-v1.0.1.apk" download>دانلود مستقیم APK</a>
+      <a class="btn ghost" href="https://github.com/havedays67-ai/TivaChat-V-Flash/releases/latest">صفحهٔ انتشارها</a>
+      <a class="btn ghost" href="../public/download/SHA256SUMS.txt" download>SHA256SUMS.txt</a>
+    </p>
+    <p class="warn">نسخهٔ ۱.۰.۲ در سطح سورس آماده و آزمون شده است؛ APK آن فقط با کیستور اصلی در GitHub Actions ساخته می‌شود.</p>
+  </div>
+
+  <h2>وضعیت اصلاح‌ها</h2>
+  <div class="grid">
+    <div class="kv"><span>ظهر ۱۲ تا ۱۶</span><b class="ok">آماده</b></div>
+    <div class="kv"><span>آستانهٔ اطمینان ۰٫۹۰</span><b class="ok">آماده</b></div>
+    <div class="kv"><span>عکس بگیر ← دوربین</span><b class="ok">آماده</b></div>
+    <div class="kv"><span>گوشی کند شده</span><b class="ok">آماده</b></div>
+    <div class="kv"><span>رم آزاد کن (صادقانه)</span><b class="ok">آماده</b></div>
+    <div class="kv"><span>aliasهای برنامه‌ها</span><b class="ok">۲۷۳ alias</b></div>
+    <div class="kv"><span>دیتاست متوازن</span><b class="ok">۱۷٬۱۶۶ / ۳۴ کلاس</b></div>
+    <div class="kv"><span>APK امضاشده ۱.۰.۲</span><b class="bad">نیازمند کیستور</b></div>
+  </div>
+
+  <h2>تست‌ها</h2>
+  <pre>node tests/engine.test.mjs     -> ALL TESTS PASSED
+node tests/v102.test.mjs       -> ALL v1.0.2 TESTS PASSED
+python3 tests/native_checks.py -> ALL NATIVE CHECKS PASSED</pre>
+
+  <h2>نکتهٔ امنیتی</h2>
+  <p>هیچ رمز یا کلید خصوصی داخل APK نیست. گاوصندوق رمز با AES-256-GCM روی AndroidKeyStore کار می‌کند و کلید از دستگاه خارج نمی‌شود.
+  حذف فایل/عکس و حذف برنامه فقط با دیالوگ سیستم انجام می‌شود؛ تماس و پیامک بدون تأیید شما ارسال نمی‌شوند.</p>
+</main>
+</body>
+</html>

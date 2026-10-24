@@ -1,0 +1,21 @@
+{
+  "name": "tivachat-intent-hashed-linear-10m",
+  "honest": true,
+  "not_an_llm": true,
+  "architecture": "signed feature hashing (unigram + bigram + char 3-5 grams) -> linear softmax",
+  "dim": 500000,
+  "classes": 20,
+  "parameter_slots": 10000000,
+  "training_dataset": "android/assets/tiva_knowledge.js (balanced, 17166 examples / 34 intents)",
+  "notes": [
+    "10,000,000 slots are addressable, not informative: with ~17k examples only a small fraction become non-zero after int8 quantization.",
+    "Raising capacity cannot replace data. Before shipping a 10M model, collect >=100k real, non-template Persian utterances with held-out speakers.",
+    "Always report template-held-out accuracy AND a hand-written novel test set. Do not claim 100% accuracy from synthetic templates.",
+    "The shipping APK must stay small: 10M int8 weights = 10 MB, which is >25x the current 3.9 MB model and adds no measurable accuracy at this data size."
+  ],
+  "commands": [
+    "TIVA_DIM=500000 python3 ml/train_model.py",
+    "python3 ml/train_model.py   # baseline dim=196608"
+  ],
+  "status": "experimental-config-not-shipped"
+}

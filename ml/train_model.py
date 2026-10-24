@@ -19,7 +19,7 @@ ROOT = Path(__file__).resolve().parents[1]
 KB_FILE = ROOT / 'android/assets/tiva_knowledge.js'
 OUT_ASSETS = ROOT / 'android/assets'
 OUT_ML = ROOT / 'ml'
-DIM = 196608          # 192 * 1024
+DIM = int(os.environ.get("TIVA_DIM", "196608"))   # default 192*1024; TIVA_DIM=500000 -> 10M params for 20 classes
 LABELS = ['open_app','close_app','battery','ram','storage','temperature','device_all',
           'flashlight_on','flashlight_off','settings_wifi','settings_bluetooth','alarm',
           'timer','call','sms','search','compose_message','greeting','thanks','negative']

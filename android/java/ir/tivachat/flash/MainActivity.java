@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.KeyguardManager;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,6 +21,7 @@ import android.os.PowerManager;
 import android.os.StatFs;
 import android.os.SystemClock;
 import android.provider.AlarmClock;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.app.ActivityManager;
 import android.content.IntentFilter;
@@ -41,12 +43,14 @@ import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends Activity {
     private static final int VAULT_REQUEST = 501;
     private static final int VOICE_REQUEST = 502;
+    private static final int MEDIA_DELETE_REQUEST = 503;
     private WebView web;
     private Vault vault;
     private boolean vaultAuthorized = false;
@@ -515,6 +519,55 @@ public class MainActivity extends Activity {
                         .setType("*/*");
                 return safeStart(intent, "مرورگر رسمی فایل‌ها باز شد؛ حذف نهایی با تأیید سیستم است.");
             } catch (Exception e) { return "{\"ok\":false,\"message\":\"صفحهٔ فایل‌ها باز نشد.\"}"; }
+        }
+
+        @JavascriptInterface public String openCamera() {
+            try {
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                if (intent.resolveActivity(getPackageManager()) == null) {
+                    intent = new Intent("android.media.action.STILL_IMAGE_CAMERA");
+                }
+                return safeStart(intent, "برنامهٔ دوربین باز شد؛ عکاسی، ذخیره یا حذف عکس فقط با اقدام خودتان است.");
+            } catch (Exception e) { return "{\"ok\":false,\"message\":\"برنامهٔ دوربین در دسترس نیست.\"}"; }
+        }
+
+        @JavascriptInterface public String uninstallApp(String pkg) {
+            try {
+                if (pkg == null || pkg.isEmpty()) return "{\"ok\":false,\"message\":\"بستهٔ برنامه مشخص نشد.\"}";
+                Intent intent = new Intent(Intent.ACTION_DELETE, Uri.parse("package:" + pkg));
+                intent.putExtra(Intent.EXTRA_RETURN_RESULT, true);
+                return safeStart(intent, "صفحهٔ حذف سیستمی باز شد؛ تأیید نهایی فقط با شماست.");
+            } catch (Exception e) { return "{\"ok\":false,\"message\":\"حذف سیستمی برنامه باز نشد.\"}"; }
+        }
+
+        /** Deletes only through the Android system consent dialog. Never silent. */
+        @JavascriptInterface public String deleteMedia(String urisJson) {
+            JSONObject out = new JSONObject();
+            try {
+                if (Build.VERSION.SDK_INT < 30) {
+                    out.put("ok", false);
+                    out.put("message", "در اندروید ۹ و ۱۰ حذف رسانه فقط از مرورگر رسمی رسانه و با تأیید خودتان انجام می‌شود؛ حذف خودکار وجود ندارد.");
+                    return out.toString();
+                }
+                JSONArray arr = new JSONArray(urisJson == null || urisJson.trim().isEmpty() ? "[]" : urisJson);
+                ArrayList<Uri> uris = new ArrayList<>();
+                for (int i = 0; i < arr.length(); i++) {
+                    String value = arr.getString(i);
+                    if (value != null && !value.isEmpty()) uris.add(Uri.parse(value));
+                }
+                if (uris.isEmpty()) {
+                    out.put("ok", false);
+                    out.put("message", "هیچ رسانه‌ای برای حذف انتخاب نشد.");
+                    return out.toString();
+                }
+                PendingIntent request = MediaStore.createDeleteRequest(getContentResolver(), uris);
+                startIntentSenderForResult(request.getIntentSender(), MEDIA_DELETE_REQUEST, null, 0, 0, 0);
+                out.put("ok", true);
+                out.put("message", "دیالوگ سیستمی حذف باز شد؛ تا تأیید شما هیچ فایلی حذف نمی‌شود.");
+            } catch (Exception e) {
+                try { out.put("ok", false); out.put("message", "درخواست حذف سیستمی ممکن نشد؛ از مرورگر رسمی رسانه استفاده کنید."); } catch (Exception ignored) { }
+            }
+            return out.toString();
         }
 
         @JavascriptInterface public String searchWeb(String query) {
