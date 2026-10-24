@@ -19,8 +19,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
+      - name: Stage only public site files (never source, secrets or tests)
+        run: |
+          mkdir -p _site/report _site/download
+          cp index.html .nojekyll _site/
+          cp -r report/. _site/report/ 2>/dev/null || true
+          cp dist/. _site/_dist/ 2>/dev/null || true
+          cp public/download/*.apk _site/download/ 2>/dev/null || true
+          cp public/download/SHA256SUMS.txt _site/download/ 2>/dev/null || true
+          cp SHA256SUMS.txt apksigner-verify.txt _site/download/ 2>/dev/null || true
+          du -sh _site
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: _site
       - id: deployment
         uses: actions/deploy-pages@v4
