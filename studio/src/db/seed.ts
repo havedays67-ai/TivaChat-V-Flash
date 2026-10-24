@@ -432,7 +432,8 @@ public final class KnowledgeGate {
     public static final double MIN_CONFIDENCE = 0.9;
 
     private static final Set<String> CONFIRM_REQUIRED = new HashSet<>(Arrays.asList(
-        "call", "sms", "compose_message", "delete_media", "uninstall_app", "calendar_event"
+        "call", "sms", "compose_message", "delete_media", "uninstall_app", "calendar_event",
+        "type_in_app"
     ));
 
     private KnowledgeGate() {}
@@ -464,6 +465,231 @@ public final class KnowledgeGate {
 }`,
   },
   {
+    key: "p-alarm-silent",
+    title: "آلارم بدون اجازه و بدون باز شدن برنامهٔ ساعت",
+    target: "android/java/ir/tivachat/flash/AlarmActions.java",
+    language: "java",
+    kind: "source",
+    requirement: "درخواست کاربر: آلارم اشکالی ندارد و بدون گرفتن اجازه تنظیم شود",
+    rationale:
+      "SET_ALARM از دستهٔ normal است و در نصب داده می‌شود؛ هیچ دیالوگ runtime ندارد. با EXTRA_SKIP_UI=true خود اندروید آلارم را بی‌درنگ ثبت می‌کند. اگر سازندهٔ گوشی این اکسترا را نادیده بگیرد، فقط در همان حالت صفحهٔ ساعت باز می‌شود.",
+    order: 6,
+    content: `package ir.tivachat.flash;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.provider.AlarmClock;
+
+/**
+ * 1.0.1/1.0.2 - silent alarm.
+ * SET_ALARM is a NORMAL permission: granted at install time, no runtime dialog.
+ * EXTRA_SKIP_UI asks the OEM clock app to create the alarm without showing its UI.
+ */
+public final class AlarmActions {
+
+    private AlarmActions() {}
+
+    public static boolean setAlarm(Context context, int hour, int minute, String label) {
+        if (hour < 0 || hour > 23 || minute < 0 || minute > 59) return false;
+
+        Intent intent = new Intent(AlarmClock.ACTION_SET_ALARM);
+        intent.putExtra(AlarmClock.EXTRA_HOUR, hour);
+        intent.putExtra(AlarmClock.EXTRA_MINUTES, minute);
+        intent.putExtra(AlarmClock.EXTRA_SKIP_UI, true);          // <-- silent
+        if (label != null && !label.isEmpty()) {
+            intent.putExtra(AlarmClock.EXTRA_MESSAGE, label);
+        }
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        if (intent.resolveActivity(context.getPackageManager()) == null) {
+            ToastHelper.show(context, "برنامهٔ ساعت روی این گوشی پیدا نشد.");
+            return false;
+        }
+        try {
+            context.startActivity(intent);
+            ToastHelper.show(context, String.format("آلارم %02d:%02d تنظیم شد", hour, minute));
+            return true;
+        } catch (android.content.ActivityNotFoundException error) {
+            return setAlarmWithUi(context, hour, minute, label);
+        } catch (SecurityException error) {
+            // OEM blocked the silent path; fall back to opening the clock UI.
+            return setAlarmWithUi(context, hour, minute, label);
+        }
+    }
+
+    /** Fallback only: opens the clock app so the user can confirm manually. */
+    private static boolean setAlarmWithUi(Context context, int hour, int minute, String label) {
+        Intent intent = new Intent(AlarmClock.ACTION_SET_ALARM);
+        intent.putExtra(AlarmClock.EXTRA_HOUR, hour);
+        intent.putExtra(AlarmClock.EXTRA_MINUTES, minute);
+        intent.putExtra(AlarmClock.EXTRA_SKIP_UI, false);
+        if (label != null && !label.isEmpty()) intent.putExtra(AlarmClock.EXTRA_MESSAGE, label);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
+        ToastHelper.show(context, "صفحهٔ ساعت باز شد؛ تأیید نهایی با خودتان است.");
+        return true;
+    }
+
+    public static boolean setTimer(Context context, int seconds, String label) {
+        if (seconds <= 0) return false;
+        Intent intent = new Intent(AlarmClock.ACTION_SET_TIMER);
+        intent.putExtra(AlarmClock.EXTRA_LENGTH, seconds);
+        intent.putExtra(AlarmClock.EXTRA_SKIP_UI, true);
+        if (label != null && !label.isEmpty()) intent.putExtra(AlarmClock.EXTRA_MESSAGE, label);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
+        return true;
+    }
+}`,
+  },
+  {
+    key: "p-bubble-close",
+    title: "× روی گوشهٔ آیکون شناور برای برداشتن آیکون",
+    target: "android/java/ir/tivachat/flash/FloatingBubble.java",
+    language: "java",
+    kind: "source",
+    requirement: "درخواست کاربر: یک × روی گوشهٔ آیکون باشد و با زدن آن آیکون حذف شود",
+    rationale:
+      "× فقط لمس خودش را می‌گیرد (نه کل صفحه)، محاسبهٔ حذف روی ترد اصلی انجام می‌شود و وضعیت پنهان بودن ذخیره می‌شود تا بوت/سرویس دوباره آیکون نسازد. دسترسی از کاشی و برنامه باقی می‌ماند.",
+    order: 7,
+    content: `package ir.tivachat.flash;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.Gravity;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.FrameLayout;
+import android.widget.TextView;
+
+/**
+ * Floating bubble with a small × badge on the top corner.
+ * Tapping the bubble opens the assistant; tapping × removes the bubble for good.
+ */
+public final class FloatingBubble {
+
+    public static final String PREFS = "tiva_overlay";
+    public static final String KEY_VISIBLE = "bubble_visible";
+
+    private final Context context;
+    private final WindowManager windowManager;
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
+    private final SharedPreferences prefs;
+    private FrameLayout root;
+    private WindowManager.LayoutParams params;
+
+    public FloatingBubble(Context context) {
+        this.context = context.getApplicationContext();
+        this.windowManager = (WindowManager) this.context.getSystemService(Context.WINDOW_SERVICE);
+        this.prefs = this.context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+    }
+
+    public boolean isVisible() {
+        return prefs.getBoolean(KEY_VISIBLE, true);
+    }
+
+    public void show() {
+        if (root != null || !isVisible()) return;
+        if (!android.provider.Settings.canDrawOverlays(context)) {
+            ToastHelper.show(context, "برای نمایش آیکون، اجازهٔ نمایش روی برنامه‌ها لازم است.");
+            return;
+        }
+
+        root = new FrameLayout(context);
+        View bubble = buildBubble();
+        View close = buildCloseBadge();
+
+        FrameLayout.LayoutParams bubbleParams = new FrameLayout.LayoutParams(dp(56), dp(56));
+        bubbleParams.gravity = Gravity.CENTER;
+        FrameLayout.LayoutParams closeParams = new FrameLayout.LayoutParams(dp(24), dp(24));
+        closeParams.gravity = Gravity.TOP | Gravity.END;
+
+        root.addView(bubble, bubbleParams);
+        root.addView(close, closeParams);
+
+        params = new WindowManager.LayoutParams(
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+                | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+            android.graphics.PixelFormat.TRANSLUCENT);
+        params.gravity = Gravity.TOP | Gravity.START;
+        params.x = dp(16);
+        params.y = dp(180);
+
+        bubble.setOnClickListener(view -> AssistantBridge.openPanel(context));
+        close.setOnClickListener(view -> hide());
+
+        mainHandler.post(() -> {
+            try {
+                windowManager.addView(root, params);
+                prefs.edit().putBoolean(KEY_VISIBLE, true).apply();
+            } catch (SecurityException | IllegalStateException error) {
+                root = null;
+            }
+        });
+    }
+
+    /** Removes the overlay view; called by TivaNative.hideBubble() and by the × badge. */
+    public void hide() {
+        prefs.edit().putBoolean(KEY_VISIBLE, false).apply();
+        final FrameLayout target = root;
+        root = null;
+        mainHandler.post(() -> {
+            if (target == null) return;
+            try {
+                windowManager.removeViewImmediate(target);
+            } catch (IllegalArgumentException | IllegalStateException ignored) {
+                // already detached (activity destroyed / config change)
+            }
+        });
+        ToastHelper.show(context, "آیکون برداشته شد. برای برگرداندن بگویید «آیکون رو برگردون».");
+    }
+
+    private View buildBubble() {
+        TextView view = new TextView(context);
+        view.setText("T");
+        view.setTextColor(Color.WHITE);
+        view.setTextSize(20);
+        view.setGravity(Gravity.CENTER);
+        GradientDrawable background = new GradientDrawable();
+        background.setShape(GradientDrawable.OVAL);
+        background.setColor(Color.parseColor("#0E9F6E"));
+        background.setStroke(dp(1), Color.parseColor("#A7F3D0"));
+        view.setBackground(background);
+        view.setElevation(dp(6));
+        return view;
+    }
+
+    private View buildCloseBadge() {
+        TextView view = new TextView(context);
+        view.setText("×");
+        view.setTextColor(Color.WHITE);
+        view.setTextSize(14);
+        view.setGravity(Gravity.CENTER);
+        GradientDrawable background = new GradientDrawable();
+        background.setShape(GradientDrawable.OVAL);
+        background.setColor(Color.parseColor("#DC2626"));
+        background.setStroke(dp(1), Color.WHITE);
+        view.setBackground(background);
+        view.setContentDescription("برداشتن آیکون");
+        view.setPadding(0, 0, 0, dp(2));
+        return view;
+    }
+
+    private int dp(int value) {
+        return Math.round(value * context.getResources().getDisplayMetrics().density);
+    }
+}`,
+  },
+  {
     key: "p-manifest",
     title: "افزودنی‌های مانیفست ۱.۰.۲",
     target: "android/AndroidManifest.xml",
@@ -472,9 +698,11 @@ public final class KnowledgeGate {
     requirement: "FileProvider برای دوربین، WRITE_SETTINGS برای روشنایی، queries دوربین",
     rationale:
       "بدون این موارد ACTION_IMAGE_CAPTURE در اندروید ۱۱+ با FileUriExposedException می‌شکند و تنظیم روشنایی خطای مجوز می‌دهد.",
-    order: 7,
+    order: 8,
     content: `<!-- داخل <manifest> : -->
 <uses-permission android:name="android.permission.WRITE_SETTINGS" tools:ignore="ProtectedPermissions" />
+<!-- normal permission: no runtime dialog, needed for silent alarms/timers -->
+<uses-permission android:name="android.permission.SET_ALARM" />
 
 <!-- داخل <queries> : -->
 <intent>
@@ -510,7 +738,7 @@ public final class KnowledgeGate {
     requirement: "نسخه همان ۱ می‌ماند: versionCode 4، versionName 1.0.1، minSdk 28، targetSdk 34، R8، امضا با keystore قبلی",
     rationale:
       "کلید امضا داخل مخزن نگه داشته نمی‌شود؛ از متغیرهای محیطی CI خوانده می‌شود. اگر fingerprint گواهی با 2e3eee11… یکی نباشد، build باید شکست بخورد.",
-    order: 8,
+    order: 9,
     content: `android {
     namespace "ir.tivachat.flash"
     compileSdk 34
@@ -566,7 +794,7 @@ public final class KnowledgeGate {
     requirement: "امضا با همان keystore و تأیید یکسان بودن SHA-256 گواهی؛ بدون تغییر شماره نسخه",
     rationale:
       "اگر اثر انگشت گواهی با نسخهٔ ۱.۰.۱ یکی نباشد، آپدیت روی گوشی نصب نمی‌شود. این اسکریپت قبل از انتشار build را متوقف می‌کند.",
-    order: 9,
+    order: 10,
     content: `#!/usr/bin/env bash
 set -euo pipefail
 
@@ -610,6 +838,9 @@ const SIGNING_FACTS = [
   { label: "Serial گواهی", value: "8BF48ECC65F5846C", source: "X.509", note: "خودامضا · sha384 · تا ۲۰۵۶" },
   { label: "Keystore", value: "tivachat-release-2026.jks · PKCS#12 · alias tivachat", source: "مخزن خصوصی (بازبینی قبلی)", note: "رمز فقط از متغیر محیطی؛ داخل APK یا مخزن عمومی نباشد" },
   { label: "طرح‌های امضای ۱.۰.۱", value: "v1 (JAR) + v2 + v3 — هر سه تأیید شد", source: "jarsigner + APK Sig Block", note: "برای آپدیت همین سه طرح لازم است" },
+  { label: "باگ گزارش‌شدهٔ مرورگر", value: "«کروم رو باز کن و بنویس google ai studio» ← اکنون browser_type با متن google ai studio" , source: "آزمون پذیرش", note: "قبلاً compose_message و چک مخاطبین بود" },
+  { label: "آیکون شناور", value: "× روی گوشهٔ آیکون + گفتن «آیکون رو بردار» / «آیکون رو برگردون»", source: "FloatingBubble.java", note: "وضعیت در SharedPreferences ذخیره می‌شود" },
+  { label: "آلارم", value: "SET_ALARM (مجوز normal) + EXTRA_SKIP_UI=true ← بدون اجازه و بدون باز شدن ساعت", source: "AlarmActions.java", note: "در صورت نادیده گرفتن OEM، صفحهٔ ساعت باز می‌شود" },
   { label: "نسخهٔ منتشرشده", value: "1.0.1 (build 4) — شمارهٔ نسخه تغییر نمی‌کند", source: "بررسی محیط", note: "لینک دانلود رسمی v1.0.1 فعال و هش آن تأیید شده است؛ APK جایگزین ساخته نشد" },
 ];
 

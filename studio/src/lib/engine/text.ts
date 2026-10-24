@@ -124,11 +124,49 @@ export function normalize(input: string): string {
 }
 
 /** Normalize and expand finglish tokens while keeping Persian word order. */
+/** Frequent mobile-keyboard misspellings for latin product names. */
+const LATIN_FIX: Record<string, string> = {
+  studuo: "studio",
+  studioo: "studio",
+  gogle: "google",
+  googel: "google",
+  googl: "google",
+  chrome: "chrome",
+  crome: "chrome",
+  chrom: "chrome",
+  telegram: "telegram",
+  telgram: "telegram",
+  whatsap: "whatsapp",
+  instgram: "instagram",
+  chatgpt: "chatgpt",
+  "chat gpt": "chatgpt",
+  gpt: "gpt",
+  yotube: "youtube",
+  youtub: "youtube",
+  github: "github",
+  gitgub: "github",
+  ai: "ai",
+};
+
+export function normalizeLatin(word: string): string {
+  return LATIN_FIX[word] ?? word;
+}
+
 export function normalizeWithFinglish(input: string): string {
   const base = normalize(input);
   const words = base.split(" ").filter(Boolean);
-  const mapped = words.map((word) => FINGLISH[word] ?? word);
+  const mapped = words.map((word) => normalizeLatin(FINGLISH[word] ?? word));
   return mapped.join(" ").replace(/\s+/g, " ").trim();
+}
+
+/** Keeps the user's latin text readable in replies/queries (only fixes typos). */
+export function tidyLatin(text: string): string {
+  return text
+    .split(" ")
+    .map((word) => normalizeLatin(word))
+    .join(" ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 export function tokens(input: string): string[] {

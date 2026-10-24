@@ -9,7 +9,8 @@ public final class KnowledgeGate {
     public static final double MIN_CONFIDENCE = 0.9;
 
     private static final Set<String> CONFIRM_REQUIRED = new HashSet<>(Arrays.asList(
-        "call", "sms", "compose_message", "delete_media", "uninstall_app", "calendar_event"
+        "call", "sms", "compose_message", "delete_media", "uninstall_app", "calendar_event",
+        "type_in_app"
     ));
 
     private KnowledgeGate() {}

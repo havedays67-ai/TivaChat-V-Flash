@@ -79,6 +79,10 @@ const ALARM_BASES = [
   "{h} {p} زنگ ساعت بذار",
   "ویک اپ برای {h} {p}",
   "آلارم فردا {h} {p}",
+  "بدون اینکه ساعت باز بشه {h} {p} آلارم بذار",
+  "آلارم {h} {p} رو خودت بذار",
+  "ساکت {h} {p} آلارم بذار",
+  "آلارم {h} {p} بدون اجازه بذار",
 ];
 const TIMER_DURATIONS = ["نیم ساعت", "یک ساعت", "یک ساعت و نیم", "دو ساعت", "۱۰ دقیقه", "۱۵ دقیقه", "۲۰ دقیقه", "۳۰ دقیقه", "۴۵ دقیقه", "۵ دقیقه", "دو دقیقه", "یک ربع", "۹۰ دقیقه", "۱۲۰ دقیقه", "سه ربع"];
 
@@ -246,10 +250,36 @@ const NEGATIVE_BASES: string[] = [
   "خیر",
   "شاید",
   "نمیخوام",
+  "گوگل چه شرکتیه",
+  "کروم چه موتوریه",
+  "تلگرام کی ساخته شد",
+  "آیکون یعنی چه",
+  "ضربدر در ریاضی چیه",
+  "بنویس یعنی چی",
+  "آلارم ساعت دیواری",
+  "قیمت بنزین چنده",
+  "ساعت کاری بانک",
+  "تقویم ۱۴۰۴",
+  "معنی اسم آوا",
+  "شعر مولانا",
+  "هوای مشهد فردا",
+  "نرخ ارز امروز",
+  "چطور تایپ سریع یاد بگیرم",
+  "بهترین مرورگر کدومه",
+  "گوگل پلی چیه",
+  "چرا تلگرام فیلتره",
+  "فرق هوش مصنوعی و انسان",
+  "گوگل کروم چه نسخه‌ایه",
 ];
 
 const CLOSE_FORMS = ["{app} رو ببند", "{app} را ببند", "{app} رو ببندش", "برام {app} رو ببند", "{app} رو بسته کن", "{app} رو بنداز", "{app} باز نمونده"];
 const UNINSTALL_FORMS = ["{app} رو حذف کن", "{app} رو پاک کن", "{app} رو حذفش کن", "برام {app} رو حذف کن", "{app} را پاک کن", "میخوام {app} رو حذف کنم", "حذف {app}"];
+const BROWSER_QUERIES = [
+  "google ai studio", "google ai studuo", "google", "gemini", "chatgpt", "github", "youtube", "gmail",
+  "قیمت دلار", "هوای تهران", "اخبار امروز", "آموزش پایتون", "قیمت بیت کوین", "نقشه تهران", "ترجمه انگلیسی",
+  "بهترین گوشی", "دانلود واتساپ", "تست سرعت اینترنت", "ساعت قطار", "بورس", "کتاب صوتی", "موسیقی ایرانی",
+];
+const BROWSER_TEXTS = ["کروم", "مرورگر", "مرورگر می", "فایرفاکس", "اوپرا مینی", "browser", "chrome"];
 const COMPOSE_TEXTS = ["دیر میرسم", "سلام خوبی", "جلسه کنسل شد", "شب میام خونه", "فایل رو فرستادم", "فردا صبح میام", "ممنون از پیامت", "کجایی", "داری میای", "زنگ بزن"];
 
 export function buildDataset(): { samples: GeneratedSample[]; stats: DatasetStats } {
@@ -306,6 +336,76 @@ export function buildDataset(): { samples: GeneratedSample[]; stats: DatasetStat
     if (intent.key === "uninstall_app") {
       const bases = UNINSTALL_FORMS.flatMap((form) => APPS.map((app) => form.replace("{app}", app.nameFa)));
       add(intent.key, expand(bases, target, rnd), target);
+      continue;
+    }
+    if (intent.key === "browser_type") {
+      const bases: string[] = [];
+      for (const browser of BROWSER_TEXTS) {
+        for (const query of BROWSER_QUERIES.slice(0, 12)) {
+          bases.push(`${browser} رو باز کن و بنویس ${query}`);
+          bases.push(`تو ${browser} بنویس ${query}`);
+          bases.push(`${browser} رو باز کن و تایپ کن ${query}`);
+          bases.push(`تو ${browser} سرچ کن ${query}`);
+          bases.push(`${query} رو تو ${browser} بنویس`);
+        }
+      }
+      add(intent.key, expand(bases, target, rnd), target);
+      continue;
+    }
+    if (intent.key === "hide_floating_icon") {
+      add(
+        intent.key,
+        expand(
+          [
+            "آیکون رو بردار",
+            "آیکون شناور رو حذف کن",
+            "آیکون رو ببند",
+            "ایکون رو بردار",
+            "آیکون رو پنهان کن",
+            "دکمه شناور رو بردار",
+            "حباب شناور رو ببند",
+            "× رو بزن",
+            "ضربدر رو بزن",
+            "آیکون رو از صفحه بردار",
+            "نشان شناور رو خاموش کن",
+            "آیکون تیوا رو ببر",
+            "آیکون رو بنداز کنار",
+            "دیگه آیکون رو نشون نده",
+            "آیکون رو قطع کن",
+            "حباب رو حذف کن",
+          ],
+          target,
+          rnd,
+          "command",
+        ),
+        target,
+      );
+      continue;
+    }
+    if (intent.key === "show_floating_icon") {
+      add(
+        intent.key,
+        expand(
+          [
+            "آیکون رو برگردون",
+            "آیکون شناور رو نشون بده",
+            "آیکون رو نمایش بده",
+            "آیکون رو روشن کن",
+            "آیکون رو بیار",
+            "دکمه شناور رو برگردون",
+            "حباب رو دوباره بساز",
+            "آیکون تیوا رو برگردون",
+            "آیکون رو فعال کن",
+            "نشان شناور رو نشان بده",
+            "آیکون رو بازگردان",
+            "آیکون رو از نو بذار",
+          ],
+          target,
+          rnd,
+          "command",
+        ),
+        target,
+      );
       continue;
     }
     if (intent.key === "compose_message") {

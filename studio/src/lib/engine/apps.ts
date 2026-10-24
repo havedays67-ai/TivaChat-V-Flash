@@ -123,7 +123,7 @@ export const APPS: AppDef[] = [
   A("play-store", "پلی استور", "Play Store", "google", ["پلی استور", "play store", "گوگل پلی", "پلی"]),
   A("play-games", "پلی گیمز", "Play Games", "google", ["پلی گیمز", "play games"]),
   A("lens", "لنز", "Lens", "google", ["لنز", "lens", "گوگل لنز"]),
-  A("chrome", "کروم", "Chrome", "browser", ["کروم", "chrome", "گوگل کروم"]),
+  A("chrome", "کروم", "Chrome", "browser", ["کروم", "chrome", "گوگل کروم", "کرووم", "chrom"]),
   A("messages", "پیام‌ها", "Messages", "google", ["پیام ها", "messages", "گوگل مسیج"]),
   A("phone", "تلفن", "Phone", "google", ["تلفن", "phone", "دیالر", "dialer"]),
   A("camera", "دوربین", "Camera", "google", ["دوربین", "camera", "کمرا"]),

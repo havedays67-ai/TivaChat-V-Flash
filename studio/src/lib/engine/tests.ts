@@ -15,6 +15,7 @@ export type Expectation = {
   mediaKind?: string;
   minConfidence?: number;
   action?: string;
+  planIncludes?: string;
 };
 
 export type TestCase = {
@@ -428,6 +429,101 @@ export const TEST_CASES: TestCase[] = [
     why: "برنامهٔ تنظیمات در فهرست aliasها هست",
   },
   {
+    key: "browser-type-google-ai-studio",
+    prompt: "کروم رو باز کن و بنویس google ai studio",
+    group: "گزارش‌شده",
+    origin: "v1.0.1-regression",
+    expected: { intent: "browser_type", app: "chrome", query: "google ai studio", notIntent: ["compose_message", "call", "sms"] },
+    why: "باگ گزارش‌شده: قبلاً مخاطبین را چک می‌کرد؛ باید در مرورگر جست‌وجو شود",
+  },
+  {
+    key: "browser-type-typo",
+    prompt: "کروم رو باز کن و بنویس google ai studuo",
+    group: "گزارش‌شده",
+    origin: "v1.0.2-requirement",
+    expected: { intent: "browser_type", app: "chrome", query: "google ai studio" },
+    why: "غلط تایپی studuo باید به studio اصلاح شود",
+  },
+  {
+    key: "browser-type-in-chrome",
+    prompt: "تو کروم بنویس google ai studio",
+    group: "مرورگر",
+    origin: "v1.0.2-requirement",
+    expected: { intent: "browser_type", app: "chrome", query: "google ai studio" },
+    why: "الگوی «تو <مرورگر> بنویس <متن>»",
+  },
+  {
+    key: "browser-type-no-contacts",
+    prompt: "بنویس google ai studio",
+    group: "گزارش‌شده",
+    origin: "v1.0.2-requirement",
+    expected: { intent: "browser_type", query: "google ai studio", notIntent: ["compose_message", "call"] },
+    why: "بدون نام برنامه هم نباید مخاطبین را بررسی کند",
+  },
+  {
+    key: "compose-telegram-draft",
+    prompt: "به تلگرام پیام بده که دیر می‌رسیم",
+    group: "پیام",
+    origin: "v1.0.2-requirement",
+    expected: { intent: "compose_message", app: "telegram", needsConfirmation: true },
+    why: "برای پیام‌رسان هنوز پیش‌نویس با تأیید لازم است",
+  },
+  {
+    key: "hide-icon",
+    prompt: "آیکون رو بردار",
+    group: "آیکون",
+    origin: "v1.0.2-requirement",
+    expected: { intent: "hide_floating_icon" },
+    why: "درخواست کاربر: برداشتن آیکون شناور",
+  },
+  {
+    key: "hide-icon-cross",
+    prompt: "× رو بزن",
+    group: "آیکون",
+    origin: "v1.0.2-requirement",
+    expected: { intent: "hide_floating_icon" },
+    why: "لمس ضربدر گوشهٔ آیکون",
+  },
+  {
+    key: "hide-icon-typo",
+    prompt: "ایکون رو ببند",
+    group: "آیکون",
+    origin: "v1.0.2-requirement",
+    expected: { intent: "hide_floating_icon" },
+    why: "املای محاوره‌ای «ایکون» هم باید کار کند",
+  },
+  {
+    key: "show-icon",
+    prompt: "آیکون رو برگردون",
+    group: "آیکون",
+    origin: "v1.0.2-requirement",
+    expected: { intent: "show_floating_icon" },
+    why: "برگرداندن آیکون پس از برداشتن",
+  },
+  {
+    key: "alarm-silent-permission",
+    prompt: "آلارم ۷ صبح بدون اینکه ساعت باز بشه",
+    group: "آلارم",
+    origin: "v1.0.2-requirement",
+    expected: {
+      intent: "alarm",
+      hour: 7,
+      minute: 0,
+      needsConfirmation: false,
+      action: "set_alarm_silent",
+      planIncludes: "EXTRA_SKIP_UI",
+    },
+    why: "آلارم بدون پنجرهٔ اجازه و بدون باز کردن برنامهٔ ساعت",
+  },
+  {
+    key: "icon-not-uninstall",
+    prompt: "آیکون رو پاک کن",
+    group: "آیکون",
+    origin: "v1.0.2-requirement",
+    expected: { intent: "hide_floating_icon", notIntent: ["uninstall_app", "delete_media"] },
+    why: "«آیکون» هرگز نباید به حذف برنامه یا فایل برود",
+  },
+  {
     key: "screenshot",
     prompt: "یه اسکرین شات بگیر",
     group: "ابزار",
@@ -503,6 +599,9 @@ function compare(expected: Expectation, result: ParseResult): { passed: boolean;
   }
   if (expected.action !== undefined && result.action !== expected.action) {
     failures.push(`اکشن: ${result.action} ≠ ${expected.action}`);
+  }
+  if (expected.planIncludes !== undefined && !result.plan.some((step) => `${step.step} ${step.detail}`.includes(expected.planIncludes))) {
+    failures.push(`برنامهٔ اجرا شامل «${expected.planIncludes}» نیست`);
   }
   if (expected.minConfidence !== undefined && result.confidence < expected.minConfidence) {
     failures.push(`اطمینان: ${result.confidence} < ${expected.minConfidence}`);

@@ -1,5 +1,7 @@
 <!-- داخل <manifest> : -->
 <uses-permission android:name="android.permission.WRITE_SETTINGS" tools:ignore="ProtectedPermissions" />
+<!-- normal permission: no runtime dialog, needed for silent alarms/timers -->
+<uses-permission android:name="android.permission.SET_ALARM" />
 
 <!-- داخل <queries> : -->
 <intent>

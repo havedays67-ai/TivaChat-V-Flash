@@ -7,6 +7,7 @@ import {
   normalizeWithFinglish,
   parseClock,
   parseDuration,
+  tidyLatin,
   tokens,
 } from "./text";
 
@@ -80,6 +81,29 @@ function extractAfter(text: string, marker: string, stopWords: string[]): string
   return value.length > 0 ? value : null;
 }
 
+const BROWSER_APPS = ["chrome", "mi-browser", "browser", "firefox", "opera-mini", "duckassist"];
+const MESSENGER_APPS = ["telegram", "bale", "blu", "rubika", "balad", "shad", "messages", "whatsapp"];
+const WRITE_VERBS = ["بنویس", "بنویسید", "تایپ کن", "تایپ", "write", "تايب"];
+const BUBBLE_WORDS = ["ایکون", "آیکون", "icon", "حباب", "بابل", "دکمه شناور", "نشان شناور", "آیکن"];
+
+/**
+ * Everything after the last write/search verb is the payload.
+ * Persian stop-words are trimmed, latin words (product names) are preserved and typo-fixed.
+ */
+function extractPayload(text: string, verbs: string[]): string {
+  const words = text.split(" ").filter(Boolean);
+  let start = -1;
+  for (let index = words.length - 1; index >= 0; index -= 1) {
+    if (verbs.some((verb) => words[index] === normalizeWithFinglish(verb))) {
+      start = index + 1;
+      break;
+    }
+  }
+  if (start === -1) return "";
+  const payloadWords = words.slice(start).filter((word) => !QUERY_STOPWORDS.has(word) && !["بنویس", "تایپ", "کن", "و"].includes(word));
+  return tidyLatin(payloadWords.join(" ")).slice(0, 200);
+}
+
 const QUERY_STOPWORDS = new Set([
   "رو",
   "را",
@@ -124,7 +148,16 @@ export function parseCommand(rawInput: string): ParseResult {
   const words = tokens(input);
   const text = ` ${normalized} `;
   const trace: { step: string; detail: string }[] = [];
-  const appMatch: AppMatch | null = findApp(normalized, normalizeWithFinglish);
+  // App detection must ignore the payload after a write/search verb, otherwise
+  // «کروم رو باز کن و بنویس google ai studio» would resolve to the Google app.
+  const verbPattern = [...WRITE_VERBS, ...SEARCH_VERBS, "سرچ کن", "جستجو کن", "جستجو", "تایپ کن"];
+  const headWords: string[] = [];
+  for (const word of normalized.split(" ")) {
+    if (verbPattern.some((verb) => normalizeWithFinglish(verb) === word)) break;
+    headWords.push(word);
+  }
+  const head = headWords.join(" ").trim();
+  const appMatch: AppMatch | null = head ? findApp(head, normalizeWithFinglish) : null;
   if (appMatch) trace.push({ step: "تطبیق برنامه", detail: `«${appMatch.matchedAlias}» → ${appMatch.app.nameFa} (${appMatch.app.key})` });
 
   const appSlot = appMatch
@@ -248,7 +281,8 @@ export function parseCommand(rawInput: string): ParseResult {
   // -------- 4. search (before open_app: «کروم رو باز کن و قیمت دلار رو سرچ کن») --------
   if (searchVerb) {
     const aliasList = appMatch ? appMatch.app.aliases : [];
-    const query = buildQuery(normalized, aliasList);
+    const tail = extractPayload(normalized, [...WRITE_VERBS, "سرچ کن", "سرچ", "جستجو کن", "جستجو", "جست", "بگرد", "پیدا کن"]);
+    const query = tail || buildQuery(normalized, aliasList);
     if (!query) {
       return finish("search", 0.86, "فعل جست‌وجو بدون عبارت", {}, {
         shouldAsk: true,
@@ -260,6 +294,32 @@ export function parseCommand(rawInput: string): ParseResult {
       reply: `در مرورگر پیش‌فرض «${query}» جست‌وجو می‌شود.`,
       plan: [{ step: "مرورگر", detail: `ACTION_WEB_SEARCH با عبارت «${query}»` }],
     });
+  }
+
+  // -------- 4.5 floating bubble: «آیکون رو بردار» / «× رو بزن» --------
+  const bubbleWord = hasToken(BUBBLE_WORDS);
+  const crossTap = hasToken(["×", "x", "ضربدر", "ضربدری"]) && !appMatch;
+  if (bubbleWord || crossTap) {
+    const showVerb = hasToken(["برگردون", "برگردان", "نمایش", "نشان", "روشن", "فعال", "بیار", "بازگردان"]);
+    const hideVerb = hasToken(["بردار", "حذف", "پاک", "پاکش", "ببند", "پنهان", "خاموش", "ببر", "جدا", "کنار", "بزن"]);
+    if (showVerb && !hasToken(["بردار", "حذف"])) {
+      return finish("show_floating_icon", 0.96, "آیکون + برگرداندن", {}, {
+        reply: "آیکون شناور برمی‌گردد. اگر مجوز نمایش روی برنامه‌ها داده نشده باشد، صفحهٔ اجازه باز می‌شود.",
+        plan: [
+          { step: "ترجیح", detail: "ذخیرهٔ bubble_visible=true در SharedPreferences" },
+          { step: "پنجره", detail: "ساخت دوبارهٔ حباب با WindowManager و SYSTEM_ALERT_WINDOW" },
+        ],
+      });
+    }
+    if (hideVerb || crossTap) {
+      return finish("hide_floating_icon", 0.97, crossTap ? "ضربه روی ×" : "آیکون + برداشتن", {}, {
+        reply: "آیکون شناور برداشته می‌شود و دیگر خودش برنمی‌گردد. از کاشی تنظیمات سریع یا خود برنامه هر وقت خواستید برمی‌گردد.",
+        plan: [
+          { step: "بستن حباب", detail: "removeView(hub) روی ترد اصلی + آزادسازی لمس‌ها" },
+          { step: "ذخیره", detail: "bubble_visible=false تا در بوت و سرویس مجدد ساخته نشود" },
+        ],
+      });
+    }
   }
 
   // -------- 5. sms / call / compose --------
@@ -294,18 +354,82 @@ export function parseCommand(rawInput: string): ParseResult {
     });
   }
 
-  if (hasToken(["بنویس", "تایپ"]) || (has(["پیام", "مسیج"]) && !hasToken(["پیامک"]) && (appMatch || hasToken(["بده", "بفرست"])))) {
-    const contact = extractAfter(normalized, "به", ["پیام", "مسیج", "بنویس", "که"]) ?? undefined;
-    const message = extractAfter(normalized, "که", []) ?? extractAfter(normalized, "بنویس", []) ?? undefined;
-    return finish("compose_message", 0.93, "فعل نوشتن پیام", { contact, message, app: appSlot }, {
+  // -------- 5.5 «کروم رو باز کن و بنویس google ai studio» --------
+  const writeVerb = has(WRITE_VERBS);
+  const browserApp = appSlot && BROWSER_APPS.includes(appSlot.key);
+  const messengerApp = appSlot && MESSENGER_APPS.includes(appSlot.key);
+  const explicitContact = has(["به ", "برای "]) && !!extractAfter(normalized, "به", ["بنویس", "بگو", "پیام", "که"]) === false;
+  const contactName = extractAfter(normalized, "به", ["بنویس", "پیام", "بده", "بفرست", "که", "بگو"]);
+
+  if (writeVerb && browserApp) {
+    const payload = extractPayload(normalized, WRITE_VERBS) || extractPayload(normalized, [...WRITE_VERBS, "سرچ", "جستجو"]);
+    if (!payload) {
+      return finish("browser_type", 0.86, "مرورگر + بنویس بدون متن", { app: appSlot }, {
+        shouldAsk: true,
+        question: `در ${appSlot?.nameFa ?? "مرورگر"} چه چیزی بنویسم؟`,
+        reply: "متن مشخص نشد؛ هیچ جست‌وجویی انجام نشد و مخاطبین هم بررسی نشدند.",
+      });
+    }
+    return finish("browser_type", 0.97, "مرورگر + فعل نوشتن + متن", { query: payload, app: appSlot }, {
+      reply: `مرورگر باز می‌شود و «${payload}» در نوار آدرس نوشته و جست‌وجو می‌شود. مخاطبین بررسی نمی‌شوند.`,
+      plan: [
+        { step: "مرورگر", detail: `Intent ACTION_VIEW / ACTION_WEB_SEARCH روی ${appSlot?.key ?? "مرورگر"} با عبارت «${payload}»` },
+        { step: "نوشتن", detail: "پر شدن نوار آدرس با EXTRA_TEXT؛ ارسال نیاز به تأیید کاربر در مرورگر دارد" },
+      ],
+    });
+  }
+
+  if (writeVerb && (messengerApp || contactName)) {
+    const message = extractPayload(normalized, WRITE_VERBS);
+    return finish("compose_message", 0.94, "پیام‌رسان/مخاطب + فعل نوشتن", { contact: contactName ?? undefined, message, app: appSlot }, {
       needsConfirmation: true,
       shouldAsk: false,
       question: null,
       reply: "متن به‌صورت پیش‌نویس در کادر پیام نوشته می‌شود و ارسال نمی‌شود؛ دکمهٔ ارسال دست خودتان است.",
       plan: [
-        { step: "باز کردن پیام‌رسان", detail: "همان برنامهٔ نام‌برده‌شده" },
+        { step: "باز کردن پیام‌رسان", detail: "همان برنامهٔ نام‌برده‌شده یا انتخاب‌گر پیام‌رسان‌ها" },
         { step: "نوشتن", detail: "AssistantAccessibilityService متن را در کادر می‌نویسد (بدون ارسال)" },
       ],
+    });
+  }
+
+  if (writeVerb) {
+    const payload = extractPayload(normalized, WRITE_VERBS);
+    const hasBrowserHint = hasToken(["کروم", "مرورگر", "مرور", "browser", "chrome", "چرم", "گوگل", "google"]);
+    if (payload && hasBrowserHint) {
+      return finish("browser_type", 0.93, "بنویس + نشانهٔ مرورگر بدون نام دقیق", { query: payload, app: appSlot }, {
+        reply: `«${payload}» در مرورگر پیش‌فرض جست‌وجو می‌شود. مخاطبین بررسی نمی‌شوند.`,
+      });
+    }
+    return finish("negative", 0.86, "بنویس بدون برنامه و بدون مخاطب", { query: payload || undefined }, {
+      shouldAsk: true,
+      question: `کجا بنویسم${payload ? ` «${payload}»` : ""}؟ در مرورگر جست‌وجو کنم، در یادداشت ذخیره کنم، یا در تلگرام برای کسی بنویسم؟`,
+      reply: "برای اینکه اشتباه پیام برای کسی نوشته نشود، هیچ کاری انجام نشد و مخاطبین بررسی نشدند.",
+      alternatives: [
+        { intent: "browser_type", labelFa: "جست‌وجو در مرورگر", confidence: 0.45 },
+        { intent: "notes_save", labelFa: "ذخیره در یادداشت", confidence: 0.3 },
+        { intent: "compose_message", labelFa: "نوشتن پیام در پیام‌رسان", confidence: 0.2 },
+      ],
+    });
+  }
+
+  if (messengerApp && hasToken(["پیام", "مسیج", "بده", "بفرست", "بزن"])) {
+    const message = extractPayload(normalized, ["که"]) || undefined;
+    return finish("compose_message", 0.94, "پیام‌رسان + پیام بده", { contact: contactName ?? undefined, message, app: appSlot }, {
+      needsConfirmation: true,
+      reply: "پیام‌رسان باز می‌شود و متن فقط پیش‌نویس می‌شود؛ ارسال با تأیید خودتان.",
+      plan: [
+        { step: "باز کردن پیام‌رسان", detail: "همان برنامهٔ نام‌برده‌شده" },
+        { step: "پیش‌نویس", detail: "AssistantAccessibilityService فقط می‌نویسد" },
+      ],
+    });
+  }
+
+  if (explicitContact && hasToken(["پیام", "مسیج"])) {
+    const contact = contactName ?? undefined;
+    return finish("compose_message", 0.9, "پیام + مخاطب", { contact }, {
+      needsConfirmation: true,
+      reply: "پیام‌رسان باز می‌شود و متن فقط پیش‌نویس می‌شود.",
     });
   }
 
@@ -322,8 +446,18 @@ export function parseCommand(rawInput: string): ParseResult {
     return finish("alarm", clock.ambiguous ? 0.89 : 0.97, "آلارم + زمان", { clock }, {
       shouldAsk: clock.ambiguous,
       question: clock.ambiguous ? `منظورتان ساعت ${formatClock(clock.hour, clock.minute)} بود؟` : null,
-      reply: `آلارم برای ساعت ${formatClock(clock.hour, clock.minute)} تنظیم می‌شود.`,
-      plan: [{ step: "ساعت", detail: `AlarmClock.ACTION_SET_ALARM ساعت ${formatClock(clock.hour, clock.minute)}` }],
+      reply: `آلارم ساعت ${formatClock(clock.hour, clock.minute)} مستقیم و بدون باز شدن برنامهٔ ساعت تنظیم می‌شود؛ هیچ پنجرهٔ اجازه‌ای لازم نیست.`,
+      plan: [
+        {
+          step: "مجوز",
+          detail: "آندروید SET_ALARM یک مجوز normal است؛ در نصب داده می‌شود و دیالوگ runtime ندارد",
+        },
+        {
+          step: "تنظیم بی‌درنگ",
+          detail: `AlarmClock.ACTION_SET_ALARM + EXTRA_HOUR=${clock.hour} + EXTRA_MINUTES=${clock.minute} + EXTRA_SKIP_UI=true`,
+        },
+        { step: "پشتیبان", detail: "اگر سازندهٔ گوشی SKIP_UI را نادیده گرفت، صفحهٔ ساعت باز می‌شود تا خودتان تأیید کنید" },
+      ],
     });
   }
 

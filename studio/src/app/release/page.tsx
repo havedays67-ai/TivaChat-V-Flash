@@ -60,6 +60,56 @@ export default async function ReleasePage() {
 
       <DownloadCard />
 
+      <Card className="border-sky-400/30">
+        <SectionHeading
+          eyebrow="گیت‌هاب"
+          title="کارها روی مخزن شما push شد"
+          description="یک شاخهٔ جدا و یک Pull Request ساخته شد؛ شاخهٔ main و فایل‌های موجود دست‌نخورده‌اند. تا وقتی خودتان merge نکنید، هیچ تغییری روی نسخهٔ منتشرشده اعمال نمی‌شود."
+        />
+        <div className="grid gap-3 md:grid-cols-2">
+          <div>
+            <KeyValue label="شاخه">
+              <code className="hash text-[11px]">{RELEASE.branch}</code>
+            </KeyValue>
+            <KeyValue label="کامیت">
+              <code className="hash text-[11px]">{RELEASE.commitSha.slice(0, 12)}</code>
+            </KeyValue>
+            <KeyValue label="Pull Request">#{RELEASE.pullRequestNumber} · باز</KeyValue>
+            <KeyValue label="فایل‌های افزوده‌شده">۶۱ فایل (studio/ + updates/1.0.2/)</KeyValue>
+            <KeyValue label="تنظیمات حساس">هیچ رمز یا keystore‌ای push نشد</KeyValue>
+          </div>
+          <div className="flex flex-col gap-2">
+            <a
+              href={RELEASE.pullRequestUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-xl bg-sky-400/90 px-4 py-2 text-center text-[12px] font-bold text-[#04121c] transition hover:bg-sky-300"
+            >
+              دیدن Pull Request #{RELEASE.pullRequestNumber}
+            </a>
+            <a
+              href={RELEASE.branchUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-xl border border-white/12 bg-white/[0.04] px-4 py-2 text-center text-[12px] text-slate-200 transition hover:bg-white/10"
+            >
+              دیدن شاخه روی گیت‌هاب
+            </a>
+            <a
+              href={`${RELEASE.repoUrl}/tree/${RELEASE.branch}/updates/1.0.2/patches`}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-xl border border-white/12 bg-white/[0.04] px-4 py-2 text-center text-[12px] text-slate-200 transition hover:bg-white/10"
+            >
+              پچ‌ها در گیت‌هاب
+            </a>
+            <p className="mt-1 text-[10px] leading-5 text-slate-500">
+              برای اعمال: PR را merge کنید، یا شاخه را با <code className="hash">git checkout {RELEASE.branch}</code> بگیرید.
+            </p>
+          </div>
+        </div>
+      </Card>
+
       <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard label="نسخهٔ منتشرشده" value="1.0.1 (4)" hint="versionName / versionCode بدون تغییر" />
         <StatCard label="لینک دانلود" value="فعال ✓" hint="هش SHA-256 تأیید شد" tone="sky" />
