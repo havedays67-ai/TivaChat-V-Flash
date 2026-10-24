@@ -1,0 +1,45 @@
+android {
+    namespace "ir.tivachat.flash"
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "ir.tivachat.flash"
+        minSdk 28
+        targetSdk 34
+        versionCode 4
+        versionName "1.0.1"
+    }
+
+    signingConfigs {
+        release {
+            storeFile file(System.getenv("TIVA_KEYSTORE") ?: "../keystore/tivachat-release-2026.jks")
+            storePassword System.getenv("TIVA_STORE_PASSWORD")
+            keyAlias System.getenv("TIVA_KEY_ALIAS") ?: "tivachat"
+            keyPassword System.getenv("TIVA_KEY_PASSWORD")
+            enableV1Signing true
+            enableV2Signing true
+            enableV3Signing true
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.release
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+// proguard-rules.pro
+-keepclassmembers class ir.tivachat.flash.MainActivity {
+    @android.webkit.JavascriptInterface <methods>;
+}
+-keep class ir.tivachat.flash.Vault { *; }
+-keep class ir.tivachat.flash.PersianTime { *; }

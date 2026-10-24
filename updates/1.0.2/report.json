@@ -1,0 +1,213 @@
+{
+  "generatedAt": "2026-10-24T03:59:14.244Z",
+  "dataset": {
+    "total": 22162,
+    "train": 18918,
+    "test": 3244,
+    "classes": 37,
+    "perClassSorted": [
+      {
+        "classKey": "browser_type",
+        "count": 900
+      },
+      {
+        "classKey": "hide_floating_icon",
+        "count": 864
+      },
+      {
+        "classKey": "negative",
+        "count": 800
+      },
+      {
+        "classKey": "show_floating_icon",
+        "count": 648
+      },
+      {
+        "classKey": "delete_media",
+        "count": 600
+      },
+      {
+        "classKey": "temperature",
+        "count": 600
+      },
+      {
+        "classKey": "open_app",
+        "count": 600
+      },
+      {
+        "classKey": "storage",
+        "count": 600
+      },
+      {
+        "classKey": "settings_sound",
+        "count": 600
+      },
+      {
+        "classKey": "ram",
+        "count": 600
+      },
+      {
+        "classKey": "screenshot",
+        "count": 600
+      },
+      {
+        "classKey": "volume_set",
+        "count": 600
+      },
+      {
+        "classKey": "device_all",
+        "count": 600
+      },
+      {
+        "classKey": "sms",
+        "count": 600
+      },
+      {
+        "classKey": "camera_video",
+        "count": 600
+      },
+      {
+        "classKey": "timer",
+        "count": 600
+      },
+      {
+        "classKey": "close_app",
+        "count": 600
+      },
+      {
+        "classKey": "settings_wifi",
+        "count": 600
+      },
+      {
+        "classKey": "search",
+        "count": 600
+      },
+      {
+        "classKey": "battery",
+        "count": 600
+      },
+      {
+        "classKey": "compose_message",
+        "count": 600
+      },
+      {
+        "classKey": "alarm",
+        "count": 600
+      },
+      {
+        "classKey": "settings_bluetooth",
+        "count": 600
+      },
+      {
+        "classKey": "flashlight_off",
+        "count": 600
+      },
+      {
+        "classKey": "uninstall_app",
+        "count": 600
+      },
+      {
+        "classKey": "settings_display",
+        "count": 600
+      },
+      {
+        "classKey": "brightness_set",
+        "count": 600
+      },
+      {
+        "classKey": "call",
+        "count": 600
+      },
+      {
+        "classKey": "flashlight_on",
+        "count": 600
+      },
+      {
+        "classKey": "camera_photo",
+        "count": 599
+      },
+      {
+        "classKey": "music_play",
+        "count": 594
+      },
+      {
+        "classKey": "notes_save",
+        "count": 540
+      },
+      {
+        "classKey": "calendar_event",
+        "count": 539
+      },
+      {
+        "classKey": "dnd_on",
+        "count": 486
+      },
+      {
+        "classKey": "airplane_mode",
+        "count": 486
+      },
+      {
+        "classKey": "greeting",
+        "count": 367
+      },
+      {
+        "classKey": "thanks",
+        "count": 339
+      }
+    ]
+  },
+  "model": {
+    "version": "1.0.2",
+    "architecture": "hashed n-gram linear softmax (int8)",
+    "params": 10911744,
+    "dim": 294912,
+    "classes": 37,
+    "trainRows": 18918,
+    "testRows": 3244,
+    "top1": 0.99876696,
+    "top3": 1,
+    "macroF1": 0.99862474,
+    "acceptance": {
+      "top1": 0.9838709677419355,
+      "total": 62,
+      "misses": [
+        {
+          "prompt": "زنگ بزن",
+          "expected": "call",
+          "predicted": "greeting"
+        }
+      ],
+      "lowConfidence": 10
+    },
+    "artifactSha256": "87ceff5bb156528fa05621702158b36d6eeb41733517c1ba6800471192a50793",
+    "artifactBytes": 10911744,
+    "artifactNote": "binary is not committed; regenerate with `npm run model:train` (≈5s)"
+  },
+  "tests": {
+    "total": 62,
+    "passed": 62,
+    "failed": 0,
+    "durationMs": 118
+  },
+  "apk": {
+    "tag": "v1.0.1",
+    "versionName": "1.0.1",
+    "versionCode": 4,
+    "apkName": "TivaChat-V-Flash-v1.0.1.apk",
+    "bytes": 361690,
+    "sha256": "ff2292a0c76fd50901d13da631e6a88c6d939c46e6aacac59f30b829181ef419",
+    "downloadUrl": "https://github.com/havedays67-ai/TivaChat-V-Flash/releases/download/v1.0.1/TivaChat-V-Flash-v1.0.1.apk",
+    "releaseUrl": "https://github.com/havedays67-ai/TivaChat-V-Flash/releases/tag/v1.0.1",
+    "repoUrl": "https://github.com/havedays67-ai/TivaChat-V-Flash",
+    "branch": "studio/1.0.2-workbench",
+    "commitSha": "2b1fabac118e710058c581c42c1678b2943b7482",
+    "pullRequestUrl": "https://github.com/havedays67-ai/TivaChat-V-Flash/pull/1",
+    "pullRequestNumber": 1,
+    "branchUrl": "https://github.com/havedays67-ai/TivaChat-V-Flash/tree/studio/1.0.2-workbench",
+    "pushedAt": "2026-10-24T03:52:00Z",
+    "packageName": "ir.tivachat.flash",
+    "minSdk": 28,
+    "targetSdk": 34,
+    "certificateSha256": "2e3eee11ae6276418d17085fc6a39373ea9c811c2b5c62bc1c7f64b42ffa46b7"
+  }
+}
